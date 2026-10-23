@@ -1,0 +1,1513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:," />
+<title>ThinkFirst — AI Learning Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FFFFFF; --bg2:#F1F5F9; --surface:#FFFFFF; --surface2:#F8FAFC;
+    --ink:#0F172A; --ink2:#334155; --ink3:#64748B;
+    --line:#E2E8F0; --line2:#CBD5E1;
+    --purple:#6C4BD8; --purple-deep:#4B2FA3; --purple-soft:#EDE8FC; --purple-ink:#3D2478;
+    --teal:#0E9594; --teal-deep:#0A6E6D; --teal-soft:#E0F4F3;
+    --amber:#B45309; --amber-soft:#FDF1DC;
+    --red:#C22F2F; --red-soft:#FBE7E7;
+    --green:#1E7F45; --green-soft:#E3F4E9;
+    --shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px -12px rgba(15,23,42,.14);
+    --r-lg:18px; --r-md:12px; --r-sm:8px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Nunito Sans",system-ui,sans-serif; font-size:16px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.disp{font-family:"Bricolage Grotesque","Nunito Sans",sans-serif; line-height:1.15; margin:0}
+  p{margin:0}
+  button{font-family:inherit; cursor:pointer}
+  textarea,input,select{font-family:inherit; font-size:15px; color:var(--ink)}
+  code,.mono{font-family:"JetBrains Mono",monospace}
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px; border-radius:4px}
+
+  /* ---------- Layout ---------- */
+  .shell{display:flex; min-height:100vh}
+  .sidebar{
+    width:248px; flex:0 0 248px; position:sticky; top:0; height:100vh;
+    background:var(--surface); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; padding:20px 14px; gap:6px; z-index:20;
+  }
+  .brand{display:flex; align-items:center; gap:11px; padding:2px 8px 16px}
+  .brand-mark{
+    width:42px; height:42px; border-radius:12px; flex:0 0 42px;
+    background:var(--purple); color:#fff; display:grid; place-items:center;
+  }
+  .brand-mark svg{width:24px; height:24px}
+  .brand-name{font-family:"Bricolage Grotesque",sans-serif; font-weight:800; font-size:21px; letter-spacing:-.01em}
+  .brand-name em{font-style:normal; color:var(--purple)}
+  .brand-sub{font-size:11.5px; color:var(--ink3); font-weight:700; letter-spacing:.04em; text-transform:uppercase}
+  .nav{display:flex; flex-direction:column; gap:3px}
+  .nav button{
+    display:flex; align-items:center; gap:11px; width:100%; text-align:left;
+    background:none; border:none; padding:10px 12px; border-radius:10px;
+    font-size:15px; font-weight:700; color:var(--ink2);
+  }
+  .nav button svg{width:19px; height:19px; flex:0 0 19px; opacity:.85}
+  .nav button:hover{background:var(--surface2); color:var(--ink)}
+  .nav button.active{background:var(--purple-soft); color:var(--purple-ink)}
+  .nav button.active svg{opacity:1}
+  .nav .badge{
+    margin-left:auto; background:var(--red); color:#fff; font-size:11px; font-weight:800;
+    min-width:20px; height:20px; border-radius:999px; display:grid; place-items:center; padding:0 5px;
+  }
+  .side-foot{margin-top:auto; background:var(--surface2); border:1px solid var(--line); border-radius:var(--r-md); padding:12px}
+  .side-foot .sf-label{font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink3)}
+  .side-foot .sf-score{font-family:"Bricolage Grotesque",sans-serif; font-size:26px; font-weight:800; margin:2px 0 0}
+  .side-foot .sf-tag{font-size:12.5px; font-weight:700}
+  .main{flex:1; min-width:0; padding:26px 30px 64px; max-width:1060px; margin:0 auto; width:100%}
+
+  /* mobile nav */
+  .mobile-nav{display:none}
+  @media (max-width:860px){
+    .shell{flex-direction:column}
+    .sidebar{display:none}
+    .main{padding:18px 16px 56px; width:100%}
+    .mobile-nav{
+      display:flex; gap:8px; overflow-x:auto; padding:12px 16px; position:sticky; top:0; z-index:30;
+      background:var(--bg); border-bottom:1px solid var(--line); scrollbar-width:none; width:100%; flex:0 0 auto;
+    }
+    .mobile-nav::-webkit-scrollbar{display:none}
+    .mobile-nav button{
+      flex:0 0 auto; border:1px solid var(--line2); background:var(--surface); color:var(--ink2);
+      border-radius:999px; padding:8px 14px; font-weight:700; font-size:14px;
+    }
+    .mobile-nav button.active{background:var(--purple); border-color:var(--purple); color:#fff}
+  }
+
+  /* ---------- Banner ---------- */
+  .vision{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+    font-size:clamp(26px,4.2vw,40px); letter-spacing:-.015em; line-height:1.12; margin-bottom:6px;
+  }
+  .vision .hl{color:var(--purple)}
+  .vision-sub{color:var(--ink2); font-size:16.5px; max-width:640px; margin-bottom:22px}
+  .ps-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px}
+  @media (max-width:700px){.ps-grid{grid-template-columns:1fr}}
+  .ps-card{border-radius:var(--r-lg); padding:20px 22px; border:1px solid var(--line); box-shadow:var(--shadow)}
+  .ps-problem{background:var(--red-soft)}
+  .ps-solution{background:var(--teal-soft)}
+  .ps-card .tag{
+    display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800;
+    letter-spacing:.07em; text-transform:uppercase; margin-bottom:9px;
+  }
+  .ps-problem .tag{color:var(--red)} .ps-solution .tag{color:var(--teal-deep)}
+  .ps-card h2{font-size:19px; margin-bottom:8px}
+  .ps-card p{font-size:15px; color:var(--ink2)}
+  .ps-card ul{margin:10px 0 0; padding-left:18px; font-size:14.5px; color:var(--ink2)}
+  .ps-card li{margin:4px 0}
+
+  /* ---------- Views & cards ---------- */
+  .view{display:none}
+  .view.active{display:block}
+  .view-head{margin-bottom:18px}
+  .view-head h2{font-size:26px; font-weight:800; letter-spacing:-.01em}
+  .view-head p{color:var(--ink2); margin-top:4px; max-width:640px}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:20px; box-shadow:var(--shadow)}
+  .card h3{font-size:16.5px; font-weight:700; margin-bottom:4px}
+  .card .sub{font-size:13.5px; color:var(--ink3)}
+  .grid{display:grid; gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}}
+  @media (max-width:700px){.g2{grid-template-columns:1fr}}
+  .stat .num{font-family:"Bricolage Grotesque",sans-serif; font-size:32px; font-weight:800; line-height:1.05}
+  .stat .lbl{font-size:13px; font-weight:700; color:var(--ink3); margin-top:3px}
+  .stat .delta{font-size:12.5px; font-weight:700; margin-top:6px}
+
+  /* dependency ring */
+  .ring-wrap{display:flex; align-items:center; gap:20px; flex-wrap:wrap}
+  .ring{position:relative; width:132px; height:132px; flex:0 0 132px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .ring-num{
+    position:absolute; inset:0; display:grid; place-items:center; text-align:center;
+  }
+  .ring .ring-num b{font-family:"Bricolage Grotesque",sans-serif; font-size:34px; font-weight:800; display:block; line-height:1}
+  .ring .ring-num span{font-size:11px; color:var(--ink3); font-weight:700}
+  .dep-tag{display:inline-block; padding:4px 12px; border-radius:999px; font-weight:800; font-size:13px}
+  .dep-warn{background:var(--amber-soft); color:var(--amber)}
+  .dep-bad{background:var(--red-soft); color:var(--red)}
+  .dep-good{background:var(--green-soft); color:var(--green)}
+
+  /* bars */
+  .balance{display:flex; height:20px; border-radius:999px; overflow:hidden; background:var(--bg2); margin:10px 0 8px}
+  .balance .b-ai{background:var(--purple); transition:width .6s ease}
+  .balance .b-ind{background:var(--teal); transition:width .6s ease}
+  .legend{display:flex; gap:18px; flex-wrap:wrap; font-size:13px; font-weight:700; color:var(--ink2)}
+  .legend .dot{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+  .bars{display:flex; align-items:flex-end; gap:10px; height:130px; padding-top:8px}
+  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; height:100%; justify-content:flex-end}
+  .bar-col .bar{width:100%; max-width:44px; border-radius:7px 7px 3px 3px; background:var(--purple); min-height:4px; transition:height .5s ease}
+  .bar-col .bar.teal{background:var(--teal)}
+  .bar-col .bv{font-size:12px; font-weight:800; color:var(--ink2)}
+  .bar-col .bl{font-size:12px; font-weight:700; color:var(--ink3)}
+  .hbar-row{display:grid; grid-template-columns:110px 1fr 44px; align-items:center; gap:10px; margin:9px 0; font-size:14px}
+  .hbar-row .track{height:14px; background:var(--bg2); border-radius:999px; overflow:hidden}
+  .hbar-row .fill{height:100%; border-radius:999px; transition:width .5s ease}
+  .hbar-row .val{font-weight:800; text-align:right}
+
+  .alert{
+    display:flex; gap:13px; border-radius:var(--r-md); padding:15px 17px; margin-bottom:16px;
+    border:1px solid; font-size:15px;
+  }
+  .alert svg{width:22px; height:22px; flex:0 0 22px; margin-top:1px}
+  .alert-amber{background:var(--amber-soft); border-color:var(--amber); color:var(--ink)}
+  .alert-teal{background:var(--teal-soft); border-color:var(--teal); color:var(--ink)}
+  .alert b{font-weight:800}
+
+  /* buttons & forms */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px;
+    padding:11px 18px; font-size:15px; font-weight:800; background:var(--purple); color:#fff;
+    transition:transform .08s ease, opacity .15s ease, background .15s ease;
+  }
+  .btn:hover{background:var(--purple-deep)}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{background:var(--line2); color:var(--ink3); cursor:not-allowed; transform:none}
+  .btn-teal{background:var(--teal)} .btn-teal:hover{background:var(--teal-deep)}
+  .btn-ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line2)}
+  .btn-ghost:hover{background:var(--surface2)}
+  .btn-sm{padding:8px 13px; font-size:13.5px; border-radius:8px}
+  textarea.ta, input.ti, select.sel{
+    width:100%; background:var(--surface2); border:1.5px solid var(--line2); border-radius:var(--r-md);
+    padding:12px 14px; resize:vertical;
+  }
+  textarea.ta:focus, input.ti:focus, select.sel:focus{border-color:var(--purple); outline:none; background:var(--surface)}
+  .field-lbl{display:block; font-weight:800; font-size:13.5px; margin:16px 0 7px; color:var(--ink2)}
+  .field-lbl:first-child{margin-top:0}
+  .hint-note{font-size:13px; color:var(--ink3); margin-top:6px}
+
+  /* question chips */
+  .qchips{display:flex; flex-wrap:wrap; gap:9px}
+  .qchip{
+    border:1.5px solid var(--line2); background:var(--surface); border-radius:999px;
+    padding:8px 15px; font-size:14px; font-weight:700; color:var(--ink2);
+  }
+  .qchip:hover{border-color:var(--purple); color:var(--ink)}
+  .qchip.sel{border-color:var(--purple); background:var(--purple-soft); color:var(--purple-ink)}
+
+  /* hint ladder */
+  .ladder{display:flex; flex-direction:column; gap:12px; margin-top:6px}
+  .rung{border:1.5px dashed var(--line2); border-radius:var(--r-md); padding:14px 16px; background:var(--surface2)}
+  .rung.open{border-style:solid; border-color:var(--purple); background:var(--purple-soft)}
+  .rung .rung-head{display:flex; align-items:center; gap:10px; font-weight:800; font-size:14.5px}
+  .rung .rung-body{margin-top:8px; font-size:15px; color:var(--ink2); display:none}
+  .rung.open .rung-body{display:block}
+  .rung .lock{margin-left:auto; font-size:12.5px; color:var(--ink3); font-weight:700}
+  .step-list{margin:10px 0 0; padding:0; list-style:none; counter-reset:st}
+  .step-list li{counter-increment:st; position:relative; padding:0 0 12px 40px; font-size:15px; color:var(--ink2)}
+  .step-list li::before{
+    content:counter(st); position:absolute; left:0; top:-2px; width:26px; height:26px; border-radius:50%;
+    background:var(--teal); color:#fff; font-weight:800; font-size:13.5px; display:grid; place-items:center;
+  }
+  .step-list li b{color:var(--ink)}
+  .codebox{
+    background:var(--surface2); color:var(--ink); border:1px solid var(--line2); border-radius:var(--r-md); padding:14px 16px;
+    font-family:"JetBrains Mono",monospace; font-size:13.5px; line-height:1.6; overflow-x:auto; white-space:pre; margin-top:10px;
+  }
+
+  /* timer */
+  .timer-face{
+    font-family:"Bricolage Grotesque",sans-serif; font-size:56px; font-weight:800; letter-spacing:.01em;
+    text-align:center; line-height:1;
+  }
+  .timer-face.low{color:var(--red)}
+  .timer-bar{height:8px; border-radius:999px; background:var(--bg2); overflow:hidden; margin:14px 0 4px}
+  .timer-bar .fill{height:100%; background:var(--teal); transition:width 1s linear}
+
+  .feedback{border-radius:var(--r-md); padding:16px 18px; margin-top:16px; display:none}
+  .feedback.show{display:block}
+  .feedback.good{background:var(--green-soft); border:1px solid var(--green)}
+  .feedback-list{margin:6px 0 0; padding-left:18px; font-size:14.5px}
+  .feedback-list li{margin:3px 0}
+
+  /* concept cards */
+  .concept-card{cursor:pointer; transition:transform .1s ease, border-color .15s ease}
+  .concept-card:hover{border-color:var(--purple); transform:translateY(-2px)}
+  .concept-emoji{
+    width:46px; height:46px; border-radius:12px; display:grid; place-items:center; margin-bottom:12px;
+  }
+  .concept-emoji svg{width:25px; height:25px}
+  .pill{display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.04em; padding:3px 9px; border-radius:999px; background:var(--purple-soft); color:var(--purple-ink)}
+  .pill.teal{background:var(--teal-soft); color:var(--teal-deep)}
+  .pill.green{background:var(--green-soft); color:var(--green)}
+
+  .toggle-row{display:flex; align-items:center; gap:12px; margin:16px 0 4px}
+  .switch{position:relative; width:52px; height:29px; flex:0 0 52px}
+  .switch input{opacity:0; width:100%; height:100%; position:absolute; margin:0; cursor:pointer}
+  .switch .track{position:absolute; inset:0; background:var(--line2); border-radius:999px; transition:background .2s}
+  .switch .track::after{
+    content:""; position:absolute; width:23px; height:23px; border-radius:50%; background:#fff;
+    top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.25);
+  }
+  .switch input:checked + .track{background:var(--teal)}
+  .switch input:checked + .track::after{left:26px}
+
+  /* socratic chat */
+  .chat{display:flex; flex-direction:column; gap:12px}
+  .msg{max-width:88%; padding:12px 15px; border-radius:14px; font-size:15px}
+  .msg.ai{background:var(--purple-soft); border-bottom-left-radius:4px; align-self:flex-start}
+  .msg.me{background:var(--teal-soft); border-bottom-right-radius:4px; align-self:flex-end}
+  .msg .who{font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; margin-bottom:3px; opacity:.75}
+
+  /* quiz */
+  .quiz-q{margin-bottom:18px}
+  .quiz-q .qq{font-weight:800; font-size:15.5px; margin-bottom:9px}
+  .opt{
+    display:block; width:100%; text-align:left; border:1.5px solid var(--line2); background:var(--surface);
+    border-radius:10px; padding:11px 14px; margin:7px 0; font-size:15px; font-weight:600; color:var(--ink);
+  }
+  .opt:hover{border-color:var(--purple)}
+  .opt.right{border-color:var(--green); background:var(--green-soft)}
+  .opt.wrong{border-color:var(--red); background:var(--red-soft)}
+  .opt:disabled{cursor:default; opacity:.92}
+  .opt .why{display:block; font-size:13px; font-weight:600; color:var(--ink2); margin-top:5px}
+
+  .warn-item{display:flex; gap:11px; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px}
+  .warn-item:last-child{border-bottom:none}
+  .warn-item svg{width:20px; height:20px; flex:0 0 20px; margin-top:1px}
+  .refl-item{border-left:3px solid var(--teal); padding:4px 0 4px 14px; margin-bottom:14px}
+  .refl-item .when{font-size:12px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:.05em}
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(80px); z-index:60;
+    background:var(--surface); color:var(--ink); border:1.5px solid var(--line2); padding:12px 20px; border-radius:999px; font-weight:700; font-size:14.5px;
+    transition:transform .3s ease; box-shadow:0 12px 30px rgba(15,23,42,.18); max-width:92vw; text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .progress-track{height:10px; border-radius:999px; background:var(--bg2); overflow:hidden}
+  .progress-track .fill{height:100%; background:var(--teal); border-radius:999px; transition:width .5s ease}
+  .footer-note{margin-top:34px; font-size:13px; color:var(--ink3); text-align:center}
+  .mt{margin-top:16px}.mt2{margin-top:24px}
+  .row-flex{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .hidden{display:none !important}
+
+  /* --- YouTube, Audio, Classroom --- */
+  .yt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  @media(max-width:900px){.yt-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.yt-grid{grid-template-columns:1fr}}
+  .yt-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .yt-thumb{height:118px;display:flex;align-items:flex-end;padding:10px;color:#fff;position:relative}
+  .yt-thumb-red{background:#FF0000}.yt-thumb-purple{background:#6C4BD8}.yt-thumb-teal{background:#0E9594}.yt-thumb-amber{background:#D97706}.yt-thumb-green{background:#1E7F45}
+  .yt-play{width:38px;height:38px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;font-size:16px;position:absolute;top:12px;left:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .yt-dur{background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:800;padding:3px 7px;border-radius:999px}
+  .yt-body{padding:13px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .yt-title{font-weight:800;font-size:14.8px;line-height:1.35}
+  .yt-meta{font-size:13px;color:var(--ink3);font-weight:600}
+  .yt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+  .audio-player{border:1.5px solid var(--teal);background:var(--teal-soft);border-radius:14px;padding:14px 16px;margin-top:16px}
+  .audio-transcript{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .audio-line{padding:8px 10px;border-radius:8px;font-size:14.5px;color:var(--ink2);background:#fff;border:1px solid var(--line);transition:all .2s}
+  .audio-line.speaking{border-color:var(--purple);background:var(--purple-soft);color:var(--ink);font-weight:700;box-shadow:0 0 0 2px #EDE8FC}
+  .gc-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .gc-logo{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:22px}
+  .gc-progress{height:10px;background:var(--bg2);border-radius:999px;overflow:hidden;margin:14px 0}
+  .gc-progress div{height:100%;background:#1E8E3E;transition:width .4s}
+  .gc-course{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:var(--surface2)}
+  .gc-assign{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff;flex-wrap:wrap}
+  .status-pill{font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:999px}
+  .status-pending{background:#FEF3C7;color:#92400E}.status-progress{background:#DBEAFE;color:#1E40AF}.status-new{background:#E3F4E9;color:#1E7F45}
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/><path d="M9 20h6M10 22h4"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Think<em>First</em></div>
+        <div class="brand-sub">AI Learning Companion</div>
+      </div>
+    </div>
+    <nav class="nav" id="sideNav" aria-label="Main">
+      <button data-view="dashboard" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</button>
+      <button data-view="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.8c.7.6 1 1.3 1 2.2h5c0-.9.3-1.6 1-2.2A6 6 0 0 0 12 3z"/></svg>Hint-First Help</button>
+      <button data-view="attempt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Independent Attempt</button>
+      <button data-view="concepts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>Concept Learning</button>
+      <button data-view="socratic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-4.6A8.4 8.4 0 1 1 21 11.5z"/><path d="M9.5 9.3a2.6 2.6 0 1 1 3.4 2.5c-.8.3-.9.8-.9 1.7"/><circle cx="12" cy="16.8" r=".6" fill="currentColor"/></svg>Socratic Mode</button>
+      <button data-view="tracker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Usage Tracker<span class="badge hidden" id="warnBadge">1</span></button>
+      <button data-view="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Check Understanding</button>
+      <button data-view="reflect"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Reflection</button>
+      <button data-view="concepts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor" stroke="none"/></svg>Watch &amp; Learn <span style="margin-left:auto;background:#FF0000;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px">YT</span></button>
+      <button data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>Classroom Sync</button>
+    </nav>
+    <div class="side-foot">
+      <div class="sf-label">AI Dependency Score</div>
+      <div class="sf-score"><span data-dep-num>68</span><span style="font-size:15px;color:var(--ink3)"> / 100</span></div>
+      <div class="sf-tag" data-dep-tag>High — leaning on AI</div>
+    </div>
+  </aside>
+
+  <!-- mobile nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="hint">Hint-First Help</button>
+    <button data-view="attempt">Independent Attempt</button>
+    <button data-view="concepts">Concepts</button>
+    <button data-view="socratic">Socratic Mode</button>
+    <button data-view="tracker">Usage Tracker</button>
+    <button data-view="quiz">Quiz</button>
+    <button data-view="reflect">Reflection</button>
+    <button data-view="concepts">▶ Videos</button>
+    <button data-view="dashboard">Classroom</button>
+  </nav>
+
+  <main class="main">
+    <!-- ============ BANNER ============ -->
+    <p class="vision">Use AI to <span class="hl">enhance</span> your learning,<br/>not replace your <span class="hl">thinking</span>.</p>
+    <p class="vision-sub">ThinkFirst is an AI Learning Companion built by students, for students. It gives you hints before answers, makes you try first, and shows you honestly how dependent on AI you've become.</p>
+
+    <div class="ps-grid">
+      <section class="ps-card ps-problem" aria-label="The problem we solve">
+        <span class="tag"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>The problem we solve</span>
+        <h2>Fast answers, shallow learning</h2>
+        <p>Students use generative AI for assignments, coding, summaries and exam prep because it's fast. But the habit quietly backfires:</p>
+        <ul>
+          <li>Ready-made answers get <b>copied without understanding</b> them</li>
+          <li>Students <b>rarely try on their own first</b> before asking AI</li>
+          <li>Nobody can see <b>how dependent they've become</b> — until exam day</li>
+        </ul>
+        <p style="margin-top:10px">The result: weaker independent problem-solving and fragile conceptual understanding.</p>
+      </section>
+      <section class="ps-card ps-solution" aria-label="Our solution">
+        <span class="tag"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Our solution</span>
+        <h2>An AI that makes you think first</h2>
+        <p>ThinkFirst flips the order — <b>your brain goes first, AI goes second</b>:</p>
+        <ul>
+          <li><b>Hints before answers</b> — three levels of nudges, not solutions</li>
+          <li>A full explanation <b>unlocks only after your own attempt</b></li>
+          <li>Concepts explained <b>step-by-step</b>, with analogies and examples</li>
+          <li>An <b>AI Dependency Score</b> tracks AI use vs. independent work</li>
+          <li>Personal feedback and a <b>quick understanding check</b> close the loop</li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- ============ 1. DASHBOARD ============ -->
+    <section class="view active" id="view-dashboard">
+      <div class="view-head">
+        <h2>Student Dashboard</h2>
+        <p>Your learning at a glance — how much you think for yourself, and how much you lean on AI. Everything here updates live as you use ThinkFirst.</p>
+      </div>
+
+      <div class="alert alert-amber" id="insightAlert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <div><b>Heads up:</b> <span id="insightText">Your AI Dependency Score is 68 — you've asked AI 24 times this week but attempted only 9 problems on your own first. Try Independent Attempt Mode before your next AI question.</span></div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <h3>AI Dependency Score</h3>
+          <p class="sub">How much your learning relies on AI vs. your own thinking. Lower is healthier.</p>
+          <div class="ring-wrap mt">
+            <div class="ring" aria-label="AI Dependency Score">
+              <svg width="132" height="132" viewBox="0 0 132 132">
+                <circle cx="66" cy="66" r="56" fill="none" stroke="var(--bg2)" stroke-width="13"/>
+                <circle id="depRing" cx="66" cy="66" r="56" fill="none" stroke="var(--amber)" stroke-width="13" stroke-linecap="round" stroke-dasharray="351.9" stroke-dashoffset="112.6"/>
+              </svg>
+              <div class="ring-num"><div><b data-dep-num>68</b><span>out of 100</span></div></div>
+            </div>
+            <div>
+              <span class="dep-tag dep-warn" data-dep-tag>High — leaning on AI</span>
+              <p style="margin-top:10px; font-size:14.5px; color:var(--ink2); max-width:300px" id="depExplain">You're in the caution zone. Independent attempts and quiz practice will pull this score down.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Learning balance</h3>
+          <p class="sub">Share of study actions this week</p>
+          <div class="balance" role="img" aria-label="AI assisted versus independent learning balance">
+            <div class="b-ai" id="balAi" style="width:62%"></div>
+            <div class="b-ind" id="balInd" style="width:38%"></div>
+          </div>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--purple)"></span>AI-Assisted — <b id="balAiPct">62%</b></span>
+            <span><span class="dot" style="background:var(--teal)"></span>Independent — <b id="balIndPct">38%</b></span>
+          </div>
+          <div class="mt">
+            <p class="sub" style="margin-bottom:6px">Overall learning progress</p>
+            <div class="progress-track"><div class="fill" id="progressFill" style="width:45%"></div></div>
+            <p class="hint-note"><b id="progressPct">45%</b> of this week's study goals completed · <span id="masteredCount">1 of 3</span> concepts checked</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g4 mt">
+        <div class="card stat"><div class="num" id="statAttempts">9</div><div class="lbl">Independent attempts</div><div class="delta" style="color:var(--teal-deep)">Try first, ask later</div></div>
+        <div class="card stat"><div class="num" id="statAsks">24</div><div class="lbl">AI asks this week</div><div class="delta" style="color:var(--amber)">Watch this number</div></div>
+        <div class="card stat"><div class="num" id="statHints">11</div><div class="lbl">Hints used</div><div class="delta" style="color:var(--teal-deep)">Hints beat answers</div></div>
+        <div class="card stat"><div class="num">6 <span style="font-size:16px;color:var(--ink3)">days</span></div><div class="lbl">Current study streak</div><div class="delta" style="color:var(--teal-deep)">Keep it going</div></div>
+      </div>
+
+      <div class="card mt">
+        <h3>Weekly activity</h3>
+        <p class="sub">Study actions per day — purple is AI-assisted, teal is independent work</p>
+        <div class="bars" id="weekBars" aria-hidden="true"></div>
+        <div class="legend mt"><span><span class="dot" style="background:var(--purple)"></span>AI-assisted actions</span><span><span class="dot" style="background:var(--teal)"></span>Independent actions</span></div>
+      </div>
+    
+      <!-- Google Classroom Sync Panel -->
+      <div class="card mt" id="gcPanel" style="border-color:#A8DAB5">
+        <div class="gc-head">
+          <div class="gc-logo">🎓</div>
+          <div style="flex:1;min-width:200px">
+            <h3 style="font-size:18px">Sync Google Classroom</h3>
+            <p class="sub">Bring your real class assignments into ThinkFirst — attempt first, then get hints. <span style="font-weight:700;color:#1E8E3E">Prototype sync — sample classroom data</span></p>
+          </div>
+          <span class="pill green" id="gcStatusPill">Not connected</span>
+        </div>
+        <div id="gcDisconnected">
+          <p style="font-size:14.5px;color:var(--ink2);margin-top:12px">Connect your Classroom to auto-import courses, due dates and assignments. ThinkFirst will turn each assignment into a Hint-First task so you learn it, not copy it.</p>
+          <div class="row-flex mt">
+            <button class="btn" id="gcConnectBtn" style="background:#fff;color:#1f1f1f;border:1.5px solid var(--line2);box-shadow:var(--shadow)"><span style="font-weight:900;color:#4285F4">G</span> Connect Google Classroom</button>
+            <button class="btn btn-teal" id="gcSyncBtn">Sync Now</button>
+            <span class="hint-note" id="gcLastSync">Last synced: Never • 0 assignments</span>
+          </div>
+        </div>
+        <div id="gcSyncing" class="hidden">
+          <p style="font-weight:800;margin-top:14px" id="gcSyncText">Connecting to Google Classroom…</p>
+          <div class="gc-progress"><div id="gcProgressBar" style="width:8%"></div></div>
+          <p class="hint-note">Fetching courses • Checking assignments • Matching topics to ThinkFirst concepts…</p>
+        </div>
+        <div id="gcSynced" class="hidden">
+          <div class="row-flex mt" style="justify-content:space-between">
+            <p style="font-weight:700;font-size:14px"><span id="gcSyncInfo">Last synced: Just now</span> • <span id="gcCount">6 assignments synced</span> from 3 courses</p>
+            <button class="btn btn-sm btn-ghost" id="gcResyncBtn">↻ Re-sync</button>
+          </div>
+          <div class="grid g3 mt" id="gcCourses"></div>
+          <h4 style="margin:18px 0 8px;font-size:15px">Imported assignments — start the ThinkFirst way</h4>
+          <div style="display:flex;flex-direction:column;gap:10px" id="gcAssignments"></div>
+          <div class="alert alert-teal mt" style="margin-bottom:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Synced to Dashboard:</b> These assignments now appear as your Upcoming Tasks below. Every “Attempt First” click loads the topic into Independent Attempt / Hint-First — no direct answers.</div></div>
+        </div>
+      </div>
+
+      <div class="card mt hidden" id="gcUpcomingCard">
+        <h3>📌 Upcoming Tasks from Google Classroom</h3>
+        <p class="sub">Your next deadlines — tackle them ThinkFirst style</p>
+        <div id="gcUpcomingList" class="mt" style="display:flex;flex-direction:column;gap:9px"></div>
+      </div>
+
+</section>
+
+    <!-- ============ 2. HINT-FIRST ============ -->
+    <section class="view" id="view-hint">
+      <div class="view-head">
+        <h2>Hint-First AI Assistance</h2>
+        <p>No instant answers here. Work through the hint ladder, write your own attempt, and only then does the full explanation unlock. That's the whole point.</p>
+      </div>
+
+      <div class="card">
+        <span class="field-lbl">1 · Pick a question (or type your own below)</span>
+        <div class="qchips" id="qChips"></div>
+        <span class="field-lbl">Subject</span>
+        <select class="sel" id="qSubject" style="max-width:320px">
+          <option>Computer Science</option><option>Biology</option><option>Economics</option><option>Mathematics</option>
+        </select>
+        <span class="field-lbl">Your question</span>
+        <textarea class="ta" id="qText" rows="2" placeholder="Type any homework or exam question here…"></textarea>
+        <p class="hint-note">Demo questions come with a full hint ladder. Your own question gets a starter hint ladder you can walk through the same way.</p>
+      </div>
+
+      <div class="card mt">
+        <h3>2 · The hint ladder</h3>
+        <p class="sub">Each hint reveals a little more. Using hints is good learning — jumping straight to the answer is not.</p>
+        <div class="ladder" id="ladder"></div>
+      </div>
+
+      <div class="card mt">
+        <h3>3 · Try your attempt</h3>
+        <p class="sub">Write what you think — even a rough, wrong attempt counts. The full explanation stays locked until you try. (<span id="attemptChars">0</span> / 20 characters minimum)</p>
+        <textarea class="ta mt" id="hintAttempt" rows="4" placeholder="My attempt: I think the answer starts with… because…"></textarea>
+        <div class="row-flex mt">
+          <button class="btn btn-teal" id="submitHintAttempt">Submit my attempt</button>
+          <button class="btn" id="unlockBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Unlock full explanation
+          </button>
+          <span class="hint-note" id="unlockNote">Locked — submit an attempt first.</span>
+        </div>
+      </div>
+
+      <div class="card mt hidden" id="explanationCard">
+        <h3>Full explanation — step by step</h3>
+        <p class="sub" id="expIntro">You earned this one. Read it, then close it and redo the problem from memory.</p>
+        <ol class="step-list" id="expSteps"></ol>
+        <div id="expCode"></div>
+        <div id="expAudioStatus" class="hint-note hidden" style="margin-top:10px;font-weight:700;color:var(--purple)">🔊 Playing audio explanation… Use Stop to end.</div>
+        <div class="alert alert-teal mt" style="margin-bottom:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <div><b>Key idea:</b> <span id="expKey"></span></div>
+        </div>
+        <div class="row-flex mt">
+          <button class="btn btn-teal" data-goto="quiz">Check my understanding</button>
+          <button class="btn btn-ghost" id="expListenBtn">🔊 Listen to this explanation</button>
+          <button class="btn btn-ghost hidden" id="expStopBtn">⏹ Stop audio</button>
+          <button class="btn btn-ghost" id="nextQuestionBtn">Try another question</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. INDEPENDENT ATTEMPT ============ -->
+    <section class="view" id="view-attempt">
+      <div class="view-head">
+        <h2>Independent Attempt Mode</h2>
+        <p>Five minutes, no AI, just you and the problem. This is where real learning happens — and it pulls your Dependency Score down.</p>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Focus timer</h3>
+          <p class="sub">Pick a prompt, start the timer, and write without any help.</p>
+          <span class="field-lbl">Prompt</span>
+          <select class="sel" id="attPrompt"></select>
+          <div class="timer-face mt2" id="timerFace">05:00</div>
+          <div class="timer-bar"><div class="fill" id="timerFill" style="width:100%"></div></div>
+          <div class="row-flex mt" style="justify-content:center">
+            <button class="btn btn-teal" id="timerStart">Start timer</button>
+            <button class="btn btn-ghost" id="timerPause" disabled>Pause</button>
+            <button class="btn btn-ghost" id="timerReset">Reset</button>
+          </div>
+          <p class="hint-note" style="text-align:center" id="timerNote">Timer hasn't started yet.</p>
+        </div>
+        <div class="card">
+          <h3>Your attempt</h3>
+          <p class="sub"><span id="attWords">0</span> words · <span id="attIdeas">0</span> key ideas spotted</p>
+          <textarea class="ta mt" id="attText" rows="9" placeholder="Write your solution or explanation here, in your own words…"></textarea>
+          <div class="row-flex mt">
+            <button class="btn" id="attSubmit">Submit for feedback</button>
+            <span class="hint-note">Feedback checks which key ideas you covered.</span>
+          </div>
+          <div class="feedback good" id="attFeedback" role="status"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. CONCEPTS ============ -->
+    <section class="view" id="view-concepts">
+      <div class="view-head">
+        <h2>Concept-Based Learning</h2>
+        <p>Concepts broken into simple steps, with an analogy and a real example. Stuck on the wording? Flip on “Explain like I'm 15.”</p>
+      </div>
+      <div class="grid g3" id="conceptCards"></div>
+      <div class="card mt hidden" id="conceptDetail"></div>
+
+      <!-- Watch & Clear This Concept - YouTube Suggestions -->
+      <div class="card mt" id="ytPanel" style="border-color:#FECACA">
+        <div class="row-flex" style="justify-content:space-between">
+          <div>
+            <h3 style="font-size:19px">▶ Watch &amp; Clear This Concept</h3>
+            <p class="sub">YouTube suggestions picked for each concept — watch after your attempt to lock it in. <span id="ytWatchedCount" style="font-weight:800;color:var(--purple)">0 videos watched this week</span></p>
+          </div>
+          <span class="pill" style="background:#FEE2E2;color:#991B1B">YouTube Suggestions</span>
+        </div>
+        <div class="grid g2 mt">
+          <div>
+            <label class="field-lbl">Search a topic / concept</label>
+            <input class="ti" id="ytSearch" type="text" placeholder="e.g. recursion, photosynthesis, supply demand, fibonacci…" />
+          </div>
+          <div>
+            <label class="field-lbl">Filter by concept</label>
+            <select class="sel" id="ytFilter">
+              <option value="all">All Concepts</option>
+              <option value="recursion">Recursion &amp; Fibonacci</option>
+              <option value="photosynthesis">Photosynthesis</option>
+              <option value="supplydemand">Supply &amp; Demand</option>
+            </select>
+          </div>
+        </div>
+        <div class="qchips mt">
+          <button class="qchip" data-ytfilter="recursion">Recursion</button>
+          <button class="qchip" data-ytfilter="photosynthesis">Photosynthesis</button>
+          <button class="qchip" data-ytfilter="supplydemand">Supply &amp; Demand</button>
+          <button class="qchip" data-ytfilter="all">Show All Videos</button>
+        </div>
+        <div class="yt-grid" id="ytGrid"></div>
+        <p class="hint-note mt">Videos open as a YouTube search for that exact title — so the link always works and you can pick the latest upload from that channel. Watching counts as a learning activity on your Dashboard.</p>
+      </div>
+    </section>
+
+    <!-- ============ 5. SOCRATIC ============ -->
+    <section class="view" id="view-socratic">
+      <div class="view-head">
+        <h2>Socratic Mode</h2>
+        <p>Here the AI won't explain anything — it asks <i>you</i> questions. Answering guiding questions builds the understanding yourself.</p>
+      </div>
+      <div class="card">
+        <span class="field-lbl">Choose a topic to think through</span>
+        <div class="qchips" id="socChips"></div>
+        <div class="chat mt2" id="socChat"></div>
+        <div id="socAnswerZone" class="hidden">
+          <span class="field-lbl">Your answer</span>
+          <textarea class="ta" id="socAnswer" rows="3" placeholder="Think it through and answer in your own words…"></textarea>
+          <div class="row-flex mt">
+            <button class="btn btn-teal" id="socSend">Send answer</button>
+            <span class="hint-note" id="socProgress">Question 1 of 3</span>
+          </div>
+        </div>
+        <div id="socDone" class="hidden mt">
+          <div class="alert alert-teal" style="margin-bottom:12px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <div id="socSummary"></div>
+          </div>
+          <div class="row-flex">
+            <button class="btn" data-goto="hint">Now try Hint-First Help</button>
+            <button class="btn btn-ghost" id="socRestart">Restart Socratic Mode</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. TRACKER ============ -->
+    <section class="view" id="view-tracker">
+      <div class="view-head">
+        <h2>AI Usage Tracker</h2>
+        <p>You can't fix what you can't see. This is your honest mirror: how often you ask AI, what for, and whether the habit is improving.</p>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Usage frequency</h3>
+          <p class="sub">AI asks per day, this week</p>
+          <div class="bars" id="usageBars"></div>
+        </div>
+        <div class="card">
+          <h3>Dependency trend</h3>
+          <p class="sub">AI Dependency Score over the last 6 weeks — the goal is a downward line</p>
+          <svg id="trendSvg" viewBox="0 0 320 150" style="width:100%; height:auto; margin-top:10px" role="img" aria-label="Dependency trend chart"></svg>
+          <p class="hint-note" id="trendNote">Down from 82 six weeks ago to <b data-dep-num>68</b> today. Slow, real progress.</p>
+        </div>
+      </div>
+      <div class="grid g2 mt">
+        <div class="card">
+          <h3>What you use AI for</h3>
+          <p class="sub">Breakdown by task type, this week</p>
+          <div id="taskBreakdown" class="mt"></div>
+        </div>
+        <div class="card">
+          <h3>Warnings &amp; healthy-use tips</h3>
+          <p class="sub">Patterns worth noticing</p>
+          <div id="warnList" class="mt"></div>
+          <div class="alert alert-teal mt" style="margin-bottom:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0 0 12 3z"/><path d="M9 20h6"/></svg>
+            <div><b>Healthy-use tip:</b> The 10-minute rule — struggle with a problem for 10 minutes on your own before opening AI. Most “stuck” feelings break around minute 6.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7. QUIZ ============ -->
+    <section class="view" id="view-quiz">
+      <div class="view-head">
+        <h2>Check Your Understanding</h2>
+        <p>Reading an explanation feels like learning. Answering questions proves it. Three questions per concept, marked instantly.</p>
+      </div>
+      <div class="card">
+        <span class="field-lbl">Choose a concept</span>
+        <div class="qchips" id="quizChips"></div>
+        <div id="quizBody" class="mt2"></div>
+      </div>
+    </section>
+
+    <!-- ============ 8. REFLECTION ============ -->
+    <section class="view" id="view-reflect">
+      <div class="view-head">
+        <h2>Reflection &amp; Feedback</h2>
+        <p>Two honest minutes at the end of a session. What did you actually learn — without AI doing the thinking?</p>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Today's reflection</h3>
+          <p class="sub">Prompt: <b>What did you learn today without AI?</b></p>
+          <textarea class="ta mt" id="reflText" rows="5" placeholder="e.g. I finally understood why recursion needs a base case — I traced fib(4) by hand and saw the repeated calls…"></textarea>
+          <div class="row-flex mt">
+            <button class="btn btn-teal" id="reflSave">Save reflection</button>
+            <span class="hint-note" id="reflCount">0 reflections saved this week</span>
+          </div>
+          <h3 class="mt2">Your saved reflections</h3>
+          <div id="reflList" class="mt"></div>
+        </div>
+        <div class="card">
+          <h3>Weak areas to work on</h3>
+          <p class="sub">Suggested from your quiz scores and usage patterns — updates as you practice</p>
+          <div id="weakList" class="mt"></div>
+          <div class="alert alert-teal mt" style="margin-bottom:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            <div><b>Next session plan:</b> 10 minutes of Independent Attempt Mode on your weakest concept, <i>then</i> one Socratic round. AI last, not first.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ================= DATA ================= */
+const QUESTIONS = [
+  {
+    id:"fib", subject:"Computer Science", task:"Coding",
+    text:"Write a recursive function to compute the nth Fibonacci number.",
+    hints:[
+      "Think about the pattern first: each Fibonacci number is the sum of the two numbers before it. fib(5) = fib(4) + fib(3). What are the two smallest cases you already know the answer to?",
+      "Every recursive function needs two parts: a base case that stops the recursion, and a recursive case that makes the problem smaller. For Fibonacci, fib(0) = 0 and fib(1) = 1 are your anchors.",
+      "Now assemble it: if n is 0 or 1, return n directly. Otherwise return fib(n-1) + fib(n-2). Try writing the function signature and the if-condition yourself before unlocking."
+    ],
+    steps:[
+      "<b>Spot the self-similar pattern.</b> Fibonacci is defined by repetition: fib(n) = fib(n−1) + fib(n−2). A problem defined in terms of smaller versions of itself is a natural fit for recursion.",
+      "<b>Fix the base cases.</b> fib(0) = 0 and fib(1) = 1. Without these, the function would call itself forever and crash with a stack overflow.",
+      "<b>Write the recursive case.</b> For any n ≥ 2, return fib(n−1) + fib(n−2). Each call splits into two smaller calls until they land on a base case.",
+      "<b>Trace it once by hand.</b> fib(4) → fib(3) + fib(2) → (fib(2)+fib(1)) + (fib(1)+fib(0)) = (1+1) + (1+0) = 3. Tracing is how you verify recursion actually works.",
+      "<b>Know the limitation.</b> This naive version recomputes the same values many times (exponential time). Memoization — storing results you've already computed — fixes that, and it's a great next step to try yourself."
+    ],
+    code:"function fib(n) {\n  if (n <= 1) return n;        // base case\n  return fib(n - 1) + fib(n - 2);  // recursive case\n}\n\nfib(6); // 8",
+    key:"Recursion = a base case that stops + a recursive case that shrinks the problem. If you can state both, you can write almost any recursive function."
+  },
+  {
+    id:"photo", subject:"Biology", task:"Assignment",
+    text:"Explain how photosynthesis converts sunlight into energy a plant can use.",
+    hints:[
+      "Start with the inputs and outputs, like a recipe: what goes in (sunlight, water, CO₂) and what comes out (glucose, oxygen)? Where in the cell does it happen?",
+      "Split it into two stages. Stage 1 needs light directly and makes energy-carrier molecules (ATP and NADPH). Stage 2 doesn't need light — it uses those carriers to build sugar. Which stage is which?",
+      "Name the stages: the light-dependent reactions (in the thylakoid) and the Calvin cycle (in the stroma). Chlorophyll absorbing light is what kicks everything off. Now try ordering the events yourself."
+    ],
+    steps:[
+      "<b>Where it happens.</b> Photosynthesis takes place in chloroplasts. The green pigment chlorophyll, sitting in stacked membranes called thylakoids, absorbs sunlight — mostly red and blue light.",
+      "<b>Stage 1 — light-dependent reactions.</b> Light energy splits water molecules (photolysis), releasing oxygen. The energy is captured in two carrier molecules: ATP and NADPH — think of them as charged batteries.",
+      "<b>Stage 2 — the Calvin cycle.</b> In the stroma (the fluid around the thylakoids), the plant spends the ATP and NADPH to convert carbon dioxide into glucose. This stage doesn't need light directly, only the batteries from Stage 1.",
+      "<b>The overall equation.</b> 6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂. Carbon dioxide and water become sugar and oxygen.",
+      "<b>Why it matters.</b> The glucose stores the sun's energy in chemical bonds. The plant burns it later for growth — and nearly every food chain on Earth starts here."
+    ],
+    code:"",
+    key:"Photosynthesis = light energy → chemical energy. Stage 1 charges the batteries (ATP/NADPH) using sunlight; Stage 2 spends them to build sugar from CO₂."
+  },
+  {
+    id:"supply", subject:"Economics", task:"Exam Prep",
+    text:"Why does the price of a product rise when demand increases but supply stays the same?",
+    hints:[
+      "Picture a fixed number of concert tickets and suddenly twice as many fans wanting them. What happens when buyers compete for something scarce?",
+      "Think about the demand curve shifting right while the supply curve stays put. Where the two curves meet — the equilibrium — moves. Does it move up or down?",
+      "Sellers notice the product selling out fast, so they can charge more and still sell everything. Buyers who value it most pay the higher price. The shortage itself pushes the price up until the market clears."
+    ],
+    steps:[
+      "<b>Start at equilibrium.</b> Before the change, price sits where quantity demanded equals quantity supplied — the market 'clears' with no shortage or surplus.",
+      "<b>Demand increases.</b> At the old price, more people now want the product than there are units available. A shortage appears: quantity demanded > quantity supplied.",
+      "<b>Competition does the pushing.</b> Buyers compete for the limited units — some offer to pay more rather than miss out. Sellers see stock flying off shelves and confidently raise the price.",
+      "<b>A new, higher equilibrium.</b> As price rises, some buyers drop out (law of demand) until quantity demanded falls back in line with the fixed supply. The market clears again — at a higher price.",
+      "<b>On the graph.</b> The demand curve shifts right; supply doesn't move; the intersection point slides up along the supply curve. Same supply, higher price, roughly the same quantity sold."
+    ],
+    code:"",
+    key:"With supply fixed, extra demand creates a shortage — and shortages bid prices up until the market clears at a new, higher equilibrium."
+  },
+  {
+    id:"recursion-sum", subject:"Computer Science", task:"Exam Prep",
+    text:"What does this function return for sum(4)? Trace it step by step.\n\nfunction sum(n) { if (n == 0) return 0; return n + sum(n - 1); }",
+    hints:[
+      "Don't run it in your head all at once. Write the calls as a stack: sum(4) needs sum(3), which needs sum(2)… until which call can answer immediately?",
+      "sum(0) returns 0 — that's the base case. Now unwind backwards: sum(1) = 1 + sum(0) = 1 + 0. Keep unwinding one level at a time.",
+      "Unwinding fully: sum(2) = 2 + 1 = 3, sum(3) = 3 + 3 = 6, sum(4) = 4 + 6 = ? You're one addition away."
+    ],
+    steps:[
+      "<b>Wind down to the base case.</b> sum(4) = 4 + sum(3); sum(3) = 3 + sum(2); sum(2) = 2 + sum(1); sum(1) = 1 + sum(0); and sum(0) = 0 — the base case stops the chain.",
+      "<b>Unwind back up.</b> sum(1) = 1 + 0 = 1. sum(2) = 2 + 1 = 3. sum(3) = 3 + 3 = 6. sum(4) = 4 + 6 = 10.",
+      "<b>The answer is 10</b> — which makes sense: it's just 4 + 3 + 2 + 1 + 0, computed by recursion instead of a loop.",
+      "<b>The general skill.</b> Tracing recursion means two passes: expand calls until the base case, then substitute results back up. This 'wind and unwind' method works for any recursive function."
+    ],
+    code:"sum(4)\n= 4 + sum(3)\n= 4 + 3 + sum(2)\n= 4 + 3 + 2 + sum(1)\n= 4 + 3 + 2 + 1 + sum(0)\n= 4 + 3 + 2 + 1 + 0\n= 10",
+    key:"Trace recursion in two passes — expand down to the base case, then substitute results back up. Never try to hold the whole thing in your head at once."
+  }
+];
+
+const CONCEPTS = [
+  {
+    id:"recursion", name:"Recursion", subject:"Computer Science",
+    color:"var(--purple)", soft:"var(--purple-soft)",
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5l-4 4"/><path d="M3 12.5v-1a4 4 0 0 1 4-4h14"/><path d="m7 21.5-4-4 4-4"/><path d="M21 11.5v1a4 4 0 0 1-4 4H3"/></svg>',
+    tagline:"A function that calls itself with a smaller problem — until the problem is trivial.",
+    steps:[
+      "<b>Base case:</b> the smallest version of the problem, answered directly with no further calls.",
+      "<b>Recursive case:</b> solve a slightly smaller version, then combine its answer with your piece.",
+      "<b>The call stack:</b> each call pauses and waits for the smaller call to return — like a stack of plates.",
+      "<b>Unwinding:</b> answers flow back up the stack, each level finishing its computation."
+    ],
+    analogy:"Russian nesting dolls. To count all the dolls, you open one, find a smaller doll inside, and repeat — until the tiniest doll, which doesn't open. That's your base case. Then you close them back up, counting as you go.",
+    example:"Factorial: 4! = 4 × 3!, and 3! = 3 × 2!, down to 1! = 1 (base case). Unwinding: 1, 2, 6, 24.",
+    simple:{
+      steps:[
+        "Recursion is when a function asks <i>itself</i> for help with a smaller piece of the same job.",
+        "It needs one tiny job it can finish instantly — the <b>base case</b> — or it would loop forever.",
+        "Each call makes the problem a bit smaller, until it hits that tiny job.",
+        "Then the answers travel back up and combine into the final answer."
+      ],
+      analogy:"Asking a friend to count a queue: 'How many people are ahead of you?' They ask the person in front, who asks the next… The person at the very front says 'zero!' — and the answers add up back down the line.",
+      example:"To add numbers 4+3+2+1: sum(4) says '4 + whatever sum(3) is'. sum(3) says '3 + sum(2)'. Eventually sum(1) just answers. Total: 10."
+    }
+  },
+  {
+    id:"photosynthesis", name:"Photosynthesis", subject:"Biology",
+    color:"var(--teal)", soft:"var(--teal-soft)",
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-4 3-8 8-9 4-.8 8 0 8 0s.5 4.5-1 8c-1.6 3.7-4.5 8-8 8z"/><path d="M4 21c4-6 8-9 12-11"/></svg>',
+    tagline:"How plants turn sunlight, water and air into food — and the oxygen we breathe.",
+    steps:[
+      "<b>Capture:</b> chlorophyll in the leaves absorbs sunlight.",
+      "<b>Light reactions:</b> sunlight splits water, releasing oxygen and charging energy carriers (ATP, NADPH).",
+      "<b>Calvin cycle:</b> the carriers' energy is spent fixing CO₂ into glucose.",
+      "<b>Result:</b> 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ — sunlight stored as sugar."
+    ],
+    analogy:"A solar-powered bakery. Solar panels (light reactions) charge batteries during the day; the bakers (Calvin cycle) use that stored power to bake bread (glucose) from flour and air (CO₂).",
+    example:"A potted plant near a window grows toward the light, gaining mass — almost all of that new mass comes from CO₂ in the air, not from the soil.",
+    simple:{
+      steps:[
+        "Plants catch sunlight with a green pigment in their leaves called <b>chlorophyll</b>.",
+        "They use that light energy to split water — and the leftover oxygen floats out into the air (that's the oxygen we breathe!).",
+        "Then they take carbon dioxide from the air and turn it into sugar, their food.",
+        "So: sunlight + water + air → sugar + oxygen."
+      ],
+      analogy:"Think of a plant as a tiny kitchen that runs on sunshine. Sunlight is the stove, water and air are the ingredients, and sugar is the cooked meal.",
+      example:"Put one plant on a sunny windowsill and one in a dark cupboard. After two weeks, only the sunny one is still green and growing — no light, no food-making."
+    }
+  },
+  {
+    id:"supplydemand", name:"Supply & Demand", subject:"Economics",
+    color:"var(--amber)", soft:"var(--amber-soft)",
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m6 15 4-5 3 3 5-7"/></svg>',
+    tagline:"Prices are a conversation between how much people want something and how much of it exists.",
+    steps:[
+      "<b>Law of demand:</b> as price falls, people buy more; as price rises, they buy less.",
+      "<b>Law of supply:</b> as price rises, sellers offer more; as it falls, they offer less.",
+      "<b>Equilibrium:</b> the price where quantity demanded equals quantity supplied.",
+      "<b>Shifts:</b> when demand or supply changes, the equilibrium price moves — shortages push prices up, surpluses push them down."
+    ],
+    analogy:"A seesaw. Buyers push the price down, sellers push it up. Where it balances is the equilibrium — add more buyers on one side and the balance point shifts.",
+    example:"When a heatwave hits, demand for ice cream jumps but shops stocked a normal amount — so prices creep up until the extra demand cools off.",
+    simple:{
+      steps:[
+        "If lots of people want something and there isn't much of it, the price goes <b>up</b>.",
+        "If nobody really wants it and shops are full of it, the price goes <b>down</b>.",
+        "The price settles where the number of buyers matches the number of items — that's the balance point.",
+        "Anything that changes how much people want it, or how much exists, moves the price."
+      ],
+      analogy:"One last slice of pizza and five hungry friends — someone will offer more for it. A whole pizza nobody wants? It goes cheap, or free.",
+      example:"Concert tickets for a famous singer sell out in minutes and resell for double. Tickets for an unknown band? Often discounted just to fill seats."
+    }
+  }
+];
+
+const SOCRATIC = {
+  recursion:{ label:"Recursion", q:[
+    "Suppose a function keeps calling itself with smaller and smaller inputs. What has to happen eventually, or the calls would never stop?",
+    "Good. Now — in the Fibonacci function, which two inputs are so small you can answer them instantly, without any more calls?",
+    "Last one: if fib(5) = fib(4) + fib(3), and you already know fib(4) = 3 and fib(3) = 2 — what is fib(5), and how did the smaller answers build it?"
+  ], done:"You just reasoned out recursion yourself: a <b>base case</b> that stops the calls, the anchors <b>fib(0)=0, fib(1)=1</b>, and smaller answers <b>combining upward</b> (3 + 2 = 5). Notice — nobody handed you that. That's the difference this mode makes."},
+  photosynthesis:{ label:"Photosynthesis", q:[
+    "A plant gains weight as it grows, but the soil in its pot barely loses any. So where do you think most of the plant's new mass actually comes from?",
+    "Interesting. The plant takes in two things from its surroundings — one through the roots, one through the leaves. What are they, and what gas do the leaves release as a leftover?",
+    "Now put it together: what energy source powers this whole process, and what does the plant store that energy as?"
+  ], done:"You built the whole idea yourself: mass mostly comes from <b>CO₂ in the air</b>, water comes up through the roots, <b>oxygen</b> is released as a leftover, and sunlight's energy ends up stored as <b>glucose (sugar)</b>. That's photosynthesis — in your own words."},
+  supplydemand:{ label:"Supply & Demand", q:[
+    "Imagine only 100 tickets exist for a concert, and 10,000 fans want one. The tickets were priced at ₹500. What do you think happens next, and why?",
+    "Now flip it: a shop ordered 1,000 umbrellas, but the monsoon ends early and nobody is buying. What will the shop probably do to the price — and what does that tell you about who pushes prices down?",
+    "So in your own words: what two forces decide a price, and what do we call the point where they balance?"
+  ], done:"Exactly — you derived it: scarcity plus competition pushes prices <b>up</b>, surplus pushes them <b>down</b>, and the price settles where <b>demand meets supply</b>: the equilibrium. You didn't memorize that; you reasoned it out."}
+};
+
+const PROMPTS_ATTEMPT = [
+  { id:"fib-trace", label:"Trace sum(4) by hand", text:"Trace this function for sum(4), showing every call and return:\nfunction sum(n) { if (n == 0) return 0; return n + sum(n - 1); }",
+    keys:[ {k:["base case","sum(0)","n == 0","n==0"], label:"identified the base case, sum(0) = 0"}, {k:["sum(3)","sum(2)","sum(1)"], label:"expanded the chain of calls (sum(3), sum(2), sum(1))"}, {k:["10"], label:"arrived at the final answer 10"}, {k:["unwind","back up","return","substitut"], label:"described the returns unwinding back up"} ],
+    missTip:"Try the two-pass method: expand calls downward until the base case, then substitute the results back upward, one level at a time."},
+  { id:"photo-explain", label:"Explain photosynthesis simply", text:"In your own words: how does a plant turn sunlight into food? Mention what goes in and what comes out.",
+    keys:[ {k:["chlorophyll","chloroplast"], label:"named where it happens (chlorophyll / chloroplasts)"}, {k:["carbon dioxide","co2","co₂"], label:"included carbon dioxide as an input"}, {k:["water"], label:"included water as an input"}, {k:["glucose","sugar"], label:"identified glucose / sugar as the stored product"}, {k:["oxygen","o2","o₂"], label:"mentioned oxygen being released"} ],
+    missTip:"Use the recipe frame: inputs (sunlight + water + CO₂) → process (light reactions, then Calvin cycle) → outputs (glucose + oxygen). If an ingredient is missing, the explanation feels incomplete."},
+  { id:"price-why", label:"Why did the price rise?", text:"A phone launches with fixed stock and twice the expected buyers. Explain, step by step, why its street price rises above the launch price.",
+    keys:[ {k:["shortage","not enough","limited","scarce","fixed"], label:"spotted the shortage created by fixed supply"}, {k:["demand"], label:"used the idea of demand increasing"}, {k:["compete","competition","bid","willing to pay"], label:"explained buyers competing / bidding the price up"}, {k:["equilibrium","balance","settle","clears"], label:"described the price settling at a new equilibrium"} ],
+    missTip:"Walk the chain in order: fixed supply → demand jumps → shortage → buyers compete → price rises → new equilibrium. Each step causes the next."}
+];
+
+const QUIZZES = {
+  recursion:{ name:"Recursion", qs:[
+    { q:"What happens if a recursive function has no base case?", opts:["It runs faster","It calls itself forever and crashes (stack overflow)","It returns 0 automatically","Nothing — base cases are optional"], a:1, why:"Without a base case there's nothing to stop the calls, so the call stack fills up and the program crashes."},
+    { q:"In fib(n) = fib(n−1) + fib(n−2), what are the base cases?", opts:["fib(2) and fib(3)","n must be even","fib(0) = 0 and fib(1) = 1","There are none"], a:2, why:"fib(0) = 0 and fib(1) = 1 are the anchors every other value is built from."},
+    { q:"Using the wind-and-unwind method, what is sum(3) for sum(n) = n + sum(n−1), sum(0) = 0?", opts:["3","5","6","9"], a:2, why:"sum(3) = 3 + sum(2) = 3 + 2 + sum(1) = 3 + 2 + 1 + 0 = 6."}
+  ]},
+  photosynthesis:{ name:"Photosynthesis", qs:[
+    { q:"Which stage of photosynthesis produces ATP and NADPH?", opts:["The Calvin cycle","The light-dependent reactions","Respiration","Photolysis of glucose"], a:1, why:"The light-dependent reactions use sunlight to charge the energy carriers ATP and NADPH."},
+    { q:"Where does the oxygen released by plants come from?", opts:["Carbon dioxide","The splitting of water molecules","The soil","Glucose breaking down"], a:1, why:"Oxygen is released when water is split during the light reactions — not from CO₂."},
+    { q:"What is the main product the Calvin cycle builds?", opts:["Oxygen","ATP","Glucose (sugar)","Chlorophyll"], a:2, why:"The Calvin cycle spends ATP and NADPH to fix CO₂ into glucose."}
+  ]},
+  supplydemand:{ name:"Supply & Demand", qs:[
+    { q:"Demand rises while supply stays fixed. What happens to price?", opts:["It falls","It stays the same","It rises","Supply automatically increases"], a:2, why:"A shortage appears at the old price, and competition among buyers bids the price up."},
+    { q:"What is the equilibrium price?", opts:["The highest price a seller can imagine","The price where quantity demanded equals quantity supplied","The average of all prices","A price set by the government"], a:1, why:"Equilibrium is where the demand and supply curves meet — the market clears."},
+    { q:"A surplus (too much stock, too few buyers) usually pushes prices…", opts:["Up","Down","Sideways on the graph only","Nowhere — surpluses don't affect price"], a:1, why:"Sellers cut prices to clear unsold stock, so a surplus pushes the price down."}
+  ]}
+};
+
+/* ================= STATE ================= */
+const S = {
+  dep: 68,
+  attempts: 9, aiAsks: 24, hints: 11, unlocks: 3, socraticDone: 0,
+  quizScores: {},          // conceptId -> best score /3
+  reflections: [
+    { when:"Yesterday", text:"Traced a recursion problem by hand before checking the answer — got it right on my own. The base case finally makes sense." },
+    { when:"Monday", text:"Realised I open AI before even reading the full question in Economics. Tomorrow: read twice, attempt once, then ask." }
+  ],
+  weekAi:   [4, 6, 3, 7, 5, 4, 2],
+  weekInd:  [1, 2, 2, 1, 3, 2, 3],
+  taskSplit: [ {t:"Assignments", v:9}, {t:"Coding help", v:7}, {t:"Summaries", v:5}, {t:"Exam prep", v:3} ],
+  trend: [82, 79, 80, 74, 71, 68]
+};
+
+/* ================= HELPERS ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 3200); }
+function showView(name){
+  $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+  $$("#sideNav button, #mobileNav button").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.addEventListener("click", e => {
+  const navBtn = e.target.closest("[data-view]"); if (navBtn) { showView(navBtn.dataset.view); return; }
+  const goBtn = e.target.closest("[data-goto]"); if (goBtn) showView(goBtn.dataset.goto);
+});
+
+function depMeta(){
+  if (S.dep >= 65) return { tag:"High — leaning on AI", cls:"dep-warn", ring:"var(--amber)", text:"You're in the caution zone. Independent attempts and quiz practice will pull this score down." };
+  if (S.dep >= 40) return { tag:"Balanced use", cls:"dep-good", ring:"var(--teal)", text:"Healthy balance — AI is helping you learn, not learning instead of you. Keep attempting first." };
+  return { tag:"Strong & independent", cls:"dep-good", ring:"var(--green)", text:"Excellent — you use AI as a tool, not a crutch. Your independent thinking is doing the heavy lifting." };
+}
+function renderAll(){
+  const m = depMeta();
+  $$("[data-dep-num]").forEach(el => el.textContent = S.dep);
+  $$("[data-dep-tag]").forEach(el => { el.textContent = m.tag; el.className = "sf-tag"; el.style.color = ""; });
+  const tagEl = document.querySelector(".card [data-dep-tag]") || $$("[data-dep-tag]")[1];
+  $$(".dep-tag").forEach(el => { el.textContent = m.tag; el.className = "dep-tag " + m.cls; });
+  const ring = $("#depRing"); if (ring){ ring.style.stroke = m.ring; ring.style.strokeDashoffset = (351.9 * (1 - S.dep/100)).toFixed(1); }
+  $("#depExplain").textContent = m.text;
+  $("#statAttempts").textContent = S.attempts;
+  $("#statAsks").textContent = S.aiAsks;
+  $("#statHints").textContent = S.hints;
+  // balance — AI asks already include hint reveals; independent = own attempts
+  const total = S.aiAsks + S.attempts;
+  const aiPct = Math.round(100 * S.aiAsks / Math.max(total,1));
+  const indPct = 100 - aiPct;
+  $("#balAi").style.width = aiPct + "%"; $("#balInd").style.width = indPct + "%";
+  $("#balAiPct").textContent = aiPct + "%"; $("#balIndPct").textContent = indPct + "%";
+  // progress from quizzes
+  const done = Object.keys(S.quizScores).length;
+  const pct = Math.round(45 + done * 15 + Math.min(S.reflections.length - 2, 2) * 5);
+  $("#progressFill").style.width = Math.min(pct,100) + "%";
+  $("#progressPct").textContent = Math.min(pct,100) + "%";
+  $("#masteredCount").textContent = done + " of 3";
+  // insight alert
+  if (S.dep >= 65){
+    $("#insightText").textContent = "Your AI Dependency Score is " + S.dep + " — you've asked AI " + S.aiAsks + " times this week but attempted only " + S.attempts + " problems on your own first. Try Independent Attempt Mode before your next AI question.";
+  } else {
+    $("#insightText").textContent = "Nice shift — your Dependency Score is down to " + S.dep + ". Your independent attempts (" + S.attempts + ") are catching up with your AI asks (" + S.aiAsks + "). This is what healthy AI use looks like.";
+    $("#insightAlert").className = "alert alert-teal";
+  }
+  $("#trendNote").innerHTML = 'Down from 82 six weeks ago to <b>' + S.dep + '</b> today. Slow, real progress.';
+  renderWarnings(); renderWeak(); renderTrend();
+}
+function bumpDep(delta){ S.dep = Math.max(5, Math.min(97, S.dep + delta)); renderAll(); }
+
+/* weekly bars (dashboard) */
+function renderWeekBars(){
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const max = Math.max(...S.weekAi.map((v,i)=>v + S.weekInd[i]));
+  $("#weekBars").innerHTML = days.map((d,i)=>{
+    const tot = S.weekAi[i] + S.weekInd[i];
+    const aiH = Math.round(78 * S.weekAi[i] / max), indH = Math.round(78 * S.weekInd[i] / max);
+    return '<div class="bar-col"><span class="bv">' + tot + '</span>' +
+      '<div style="display:flex;flex-direction:column;gap:2px;width:100%;align-items:center">' +
+      '<div class="bar" style="height:' + aiH + 'px"></div><div class="bar teal" style="height:' + indH + 'px"></div></div>' +
+      '<span class="bl">' + d + '</span></div>';
+  }).join("");
+  $("#usageBars").innerHTML = days.map((d,i)=>{
+    const h = Math.round(85 * S.weekAi[i] / Math.max(...S.weekAi));
+    return '<div class="bar-col"><span class="bv">' + S.weekAi[i] + '</span><div class="bar" style="height:' + h + 'px"></div><span class="bl">' + d + '</span></div>';
+  }).join("");
+  const colors = ["var(--purple)","var(--teal)","var(--amber)","var(--purple-deep)"];
+  const maxT = Math.max(...S.taskSplit.map(t=>t.v));
+  $("#taskBreakdown").innerHTML = S.taskSplit.map((t,i)=>
+    '<div class="hbar-row"><span>' + t.t + '</span><div class="track"><div class="fill" style="width:' + Math.round(100*t.v/maxT) + '%;background:' + colors[i%4] + '"></div></div><span class="val">' + t.v + '</span></div>'
+  ).join("");
+}
+function renderTrend(){
+  const pts = S.trend.concat([S.dep]);
+  const xs = [18, 72, 126, 180, 234, 272, 302], ys = pts.map(v => 128 - (v - 30) * 1.55);
+  const line = pts.map((v,i)=> xs[i] + "," + ys[i].toFixed(1)).join(" ");
+  $("#trendSvg").innerHTML =
+    '<line x1="14" y1="46.5" x2="306" y2="46.5" stroke="var(--amber)" stroke-dasharray="4 4" stroke-width="1.5"/>' +
+    '<text x="304" y="40" font-size="10.5" fill="var(--amber)" font-weight="700" text-anchor="end">Caution line (65)</text>' +
+    '<polyline points="' + line + '" fill="none" stroke="var(--purple)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    pts.map((v,i)=>'<circle cx="' + xs[i] + '" cy="' + ys[i].toFixed(1) + '" r="4.5" fill="var(--surface)" stroke="var(--purple)" stroke-width="2.5"/><text x="' + xs[i] + '" y="' + (ys[i]-11).toFixed(1) + '" font-size="11" font-weight="800" fill="var(--ink2)" text-anchor="middle">' + v + '</text>').join("") +
+    '<text x="18" y="146" font-size="10.5" fill="var(--ink3)">6 weeks ago</text><text x="302" y="146" font-size="10.5" fill="var(--ink3)" text-anchor="end">Today</text>';
+}
+function renderWarnings(){
+  const warns = [];
+  if (S.unlocks >= 3) warns.push({ c:"var(--amber)", t:"<b>Answer-first pattern:</b> you've unlocked <b>" + S.unlocks + " full explanations</b> this week. Each unlock required an attempt — good — but try stopping at Hint 2 next time and finishing solo." });
+  if (S.aiAsks > S.attempts * 2) warns.push({ c:"var(--red)", t:"<b>Ask-before-trying:</b> AI asks (" + S.aiAsks + ") are more than double your independent attempts (" + S.attempts + "). Flip the order on your next question." });
+  warns.push({ c:"var(--amber)", t:"<b>Late-night summaries:</b> 5 summary requests after 11 pm this week. Summaries feel productive but are the easiest to copy without absorbing — re-read them next morning and write 3 lines from memory." });
+  if (S.socraticDone === 0) warns.push({ c:"var(--teal)", t:"<b>Untried feature:</b> you haven't used Socratic Mode yet. One round takes ~3 minutes and counts fully as independent learning." });
+  $("#warnList").innerHTML = warns.map(w =>
+    '<div class="warn-item"><svg viewBox="0 0 24 24" fill="none" stroke="' + w.c + '" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg><div>' + w.t + '</div></div>'
+  ).join("");
+  const badge = $("#warnBadge");
+  badge.textContent = warns.length; badge.classList.toggle("hidden", warns.length === 0);
+}
+function renderWeak(){
+  const items = [];
+  CONCEPTS.forEach(c => {
+    const sc = S.quizScores[c.id];
+    if (sc === undefined) items.push({ name:c.name, note:"Not checked yet — take the 3-question quiz to see where you stand.", cls:"", btn:'<button class="btn btn-sm btn-ghost" data-goto="quiz">Take quiz</button>' });
+    else if (sc < 3) items.push({ name:c.name, note:"Quiz score " + sc + "/3 — revisit the concept steps, then re-try.", cls:"", btn:'<button class="btn btn-sm btn-ghost" data-goto="concepts">Review concept</button>' });
+    else items.push({ name:c.name, note:"Quiz score 3/3 — solid. Keep it warm with one independent attempt this week.", cls:"", btn:'<span class="pill green">Mastered</span>' });
+  });
+  if (S.dep >= 65) items.push({ name:"Habit: asking before attempting", note:"Your biggest weak area isn't a topic — it's the order. Attempt first, then ask.", cls:"", btn:'<button class="btn btn-sm btn-ghost" data-goto="attempt">Start an attempt</button>' });
+  $("#weakList").innerHTML = items.map(i =>
+    '<div class="warn-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="var(--purple)"/></svg><div style="flex:1"><b>' + i.name + '</b><br/><span style="color:var(--ink2)">' + i.note + '</span></div><div>' + i.btn + '</div></div>'
+  ).join("");
+}
+
+/* ================= HINT-FIRST ================= */
+let curQ = QUESTIONS[0], hintsOpen = 0, attemptSubmitted = false;
+function loadQuestion(q){
+  curQ = q; hintsOpen = 0; attemptSubmitted = false;
+  $("#qText").value = q.text; $("#qSubject").value = q.subject;
+  $$("#qChips .qchip").forEach(c => c.classList.toggle("sel", c.dataset.qid === q.id));
+  $("#hintAttempt").value = ""; $("#attemptChars").textContent = "0";
+  $("#unlockBtn").disabled = true; $("#unlockNote").textContent = "Locked — submit an attempt first.";
+  $("#explanationCard").classList.add("hidden");
+  renderLadder();
+}
+function renderLadder(){
+  $("#ladder").innerHTML = curQ.hints.map((h,i) => {
+    const open = i < hintsOpen, next = i === hintsOpen;
+    return '<div class="rung' + (open ? " open" : "") + '">' +
+      '<div class="rung-head"><span class="pill' + (open ? " teal" : "") + '">Hint ' + (i+1) + ' of 3</span>' +
+      (open ? "" : '<span class="lock">' + (next ? "Ready when you are" : "Locked — open Hint " + i + " first") + '</span>') +
+      (next ? '<button class="btn btn-sm" style="margin-left:auto" data-hint="' + i + '">Reveal hint</button>' : "") +
+      '</div>' + (open ? '<div class="rung-body" style="display:block">' + h + '</div>' : "") + '</div>';
+  }).join("");
+}
+$("#qChips").innerHTML = QUESTIONS.map(q =>
+  '<button class="qchip" data-qid="' + q.id + '">' + q.subject.split(" ")[0] + " · " + (q.id === "fib" ? "Fibonacci recursion" : q.id === "photo" ? "Photosynthesis" : q.id === "supply" ? "Price & demand" : "Trace the recursion") + '</button>'
+).join("");
+$("#qChips").addEventListener("click", e => {
+  const chip = e.target.closest("[data-qid]"); if (!chip) return;
+  loadQuestion(QUESTIONS.find(q => q.id === chip.dataset.qid));
+});
+$("#qText").addEventListener("input", () => {
+  const v = $("#qText").value.trim();
+  const match = QUESTIONS.find(q => q.text === v);
+  if (!match && v.length > 0 && (!curQ.custom || curQ.text !== v)){
+    curQ = { id:"custom", subject:$("#qSubject").value, task:"Assignment", text:v,
+      hints:[
+        "Break the question into parts: what is it actually asking you to find, explain, or prove? Underline the key terms and restate the question in your own words.",
+        "Connect it to what you already know: which concept, formula, or example from class looks most similar? Write down one thing you do know about it.",
+        "Sketch a rough first step — an outline, a diagram, or the first line of working. It doesn't need to be right; it needs to exist. Then use the attempt box."
+      ],
+      steps:[
+        "<b>Restate the question</b> in your own words — if you can't, that's the first gap to close.",
+        "<b>List what you know</b> that's relevant: definitions, formulas, similar examples.",
+        "<b>Make a plan:</b> decide the order of steps before writing the final answer.",
+        "<b>Execute and check:</b> work through the plan, then sanity-check the result against the question."
+      ],
+      code:"", key:"For any question: restate it, connect it to something you know, plan the steps, then execute. The process matters more than this one answer." };
+    hintsOpen = 0; attemptSubmitted = false; renderLadder();
+    $("#unlockBtn").disabled = true; $("#unlockNote").textContent = "Locked — submit an attempt first.";
+    $("#explanationCard").classList.add("hidden");
+  }
+});
+$("#ladder").addEventListener("click", e => {
+  const b = e.target.closest("[data-hint]"); if (!b) return;
+  hintsOpen = parseInt(b.dataset.hint, 10) + 1;
+  S.hints++; S.aiAsks++; renderLadder(); renderAll();
+  toast("Hint " + hintsOpen + " opened — that's a healthy way to use AI.");
+});
+$("#hintAttempt").addEventListener("input", () => { $("#attemptChars").textContent = $("#hintAttempt").value.trim().length; });
+$("#submitHintAttempt").addEventListener("click", () => {
+  const v = $("#hintAttempt").value.trim();
+  if (v.length < 20){ toast("Give it a real try first — write at least 20 characters of your own attempt."); return; }
+  if (attemptSubmitted){ toast("Attempt already submitted — you can unlock the explanation now."); return; }
+  attemptSubmitted = true; S.attempts++; bumpDep(-2);
+  $("#unlockBtn").disabled = false; $("#unlockNote").textContent = "Unlocked by your attempt. Nice — you thought first.";
+  toast("Attempt logged as independent work. Dependency Score −2.");
+});
+$("#unlockBtn").addEventListener("click", () => {
+  S.unlocks++; bumpDep(3);
+  $("#expSteps").innerHTML = curQ.steps.map(s => "<li>" + s + "</li>").join("");
+  $("#expKey").textContent = curQ.key;
+  $("#expCode").innerHTML = curQ.code ? '<div class="codebox">' + curQ.code.replace(/</g,"&lt;") + '</div>' : "";
+  $("#explanationCard").classList.remove("hidden");
+  $("#explanationCard").scrollIntoView({behavior:"smooth", block:"start"});
+  toast("Full explanation unlocked. Dependency Score +3 — balance it with a quiz.");
+});
+$("#nextQuestionBtn").addEventListener("click", () => {
+  const idx = QUESTIONS.indexOf(curQ);
+  loadQuestion(QUESTIONS[(idx + 1) % QUESTIONS.length]);
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+/* ================= INDEPENDENT ATTEMPT ================= */
+$("#attPrompt").innerHTML = PROMPTS_ATTEMPT.map(p => '<option value="' + p.id + '">' + p.label + '</option>').join("");
+let timerSec = 300, timerInt = null, timerRunning = false;
+function fmt(s){ return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); }
+function drawTimer(){
+  $("#timerFace").textContent = fmt(timerSec);
+  $("#timerFace").classList.toggle("low", timerSec <= 60 && timerSec > 0);
+  $("#timerFill").style.width = (100 * timerSec / 300) + "%";
+}
+function stopTimer(){ clearInterval(timerInt); timerInt = null; timerRunning = false; $("#timerPause").disabled = true; $("#timerStart").textContent = "Start timer"; }
+$("#timerStart").addEventListener("click", () => {
+  if (timerRunning) return;
+  if (timerSec <= 0) timerSec = 300;
+  timerRunning = true; $("#timerPause").disabled = false; $("#timerStart").textContent = "Running…";
+  $("#timerNote").textContent = "Focus time — no AI, no hints. Just you.";
+  timerInt = setInterval(() => {
+    timerSec--; drawTimer();
+    if (timerSec <= 0){ stopTimer(); $("#timerNote").textContent = "Time's up! Submit what you have — an unfinished honest attempt still counts."; toast("Time's up — submit your attempt for feedback."); }
+  }, 1000);
+});
+$("#timerPause").addEventListener("click", () => { stopTimer(); $("#timerNote").textContent = "Paused. Your attempt is saved in the box."; });
+$("#timerReset").addEventListener("click", () => { stopTimer(); timerSec = 300; drawTimer(); $("#timerNote").textContent = "Timer hasn't started yet."; });
+function attKeyCount(){
+  const p = PROMPTS_ATTEMPT.find(x => x.id === $("#attPrompt").value);
+  const v = $("#attText").value.toLowerCase();
+  return p.keys.filter(k => k.k.some(word => v.includes(word))).length;
+}
+$("#attText").addEventListener("input", () => {
+  const v = $("#attText").value.trim();
+  $("#attWords").textContent = v ? v.split(/\s+/).length : 0;
+  $("#attIdeas").textContent = attKeyCount();
+});
+$("#attSubmit").addEventListener("click", () => {
+  const p = PROMPTS_ATTEMPT.find(x => x.id === $("#attPrompt").value);
+  const v = $("#attText").value.trim();
+  if (v.length < 30){ toast("Write a bit more first — at least a few sentences of your own thinking."); return; }
+  stopTimer();
+  const lv = v.toLowerCase();
+  const hit = p.keys.filter(k => k.k.some(w => lv.includes(w)));
+  const miss = p.keys.filter(k => !hit.includes(k));
+  S.attempts++; bumpDep(-3);
+  const fb = $("#attFeedback");
+  fb.innerHTML = "<b>Personal feedback — " + hit.length + " of " + p.keys.length + " key ideas covered</b>" +
+    (hit.length ? '<p style="margin-top:8px"><b style="color:var(--green)">What you got right:</b></p><ul class="feedback-list">' + hit.map(k => "<li>" + k.label + "</li>").join("") + "</ul>" : "") +
+    (miss.length ? '<p style="margin-top:8px"><b style="color:var(--amber)">What was missing:</b></p><ul class="feedback-list">' + miss.map(k => "<li>" + k.label + "</li>").join("") + "</ul>" : '<p style="margin-top:8px">You covered every key idea — excellent independent work.</p>') +
+    '<p style="margin-top:10px"><b>One improvement tip:</b> ' + p.missTip + "</p>";
+  fb.classList.add("show");
+  toast("Attempt submitted. Dependency Score −3 — independent work pays off.");
+});
+
+/* ================= CONCEPTS ================= */
+$("#conceptCards").innerHTML = CONCEPTS.map(c =>
+  '<div class="card concept-card" data-concept="' + c.id + '" tabindex="0" role="button" aria-label="Open ' + c.name + '">' +
+  '<div class="concept-emoji" style="background:' + c.soft + ';color:' + c.color + '">' + c.icon + '</div>' +
+  '<h3>' + c.name + '</h3><p class="sub">' + c.subject + '</p>' +
+  '<p style="margin-top:8px;font-size:14.5px;color:var(--ink2)">' + c.tagline + '</p>' +
+  '<p class="mt"><span class="pill teal">Open concept</span> ' + (S.quizScores[c.id] === 3 ? '<span class="pill green">Quiz: 3/3</span>' : S.quizScores[c.id] !== undefined ? '<span class="pill">Quiz: ' + S.quizScores[c.id] + '/3</span>' : '') + '</p></div>'
+).join("");
+let eli15 = false;
+function openConcept(id){
+  const c = CONCEPTS.find(x => x.id === id);
+  const d = $("#conceptDetail");
+  const body = eli15 ? c.simple : c;
+  d.innerHTML =
+    '<div class="row-flex" style="justify-content:space-between"><h3 style="font-size:20px">' + c.name + '</h3><span class="pill">' + c.subject + '</span></div>' +
+    '<p style="color:var(--ink2);margin-top:4px">' + c.tagline + '</p>' +
+    '<div class="toggle-row"><label class="switch"><input type="checkbox" id="eliToggle" ' + (eli15 ? "checked" : "") + '><span class="track"></span></label><b>Explain like I\'m 15</b><span class="hint-note">— simpler words, same idea</span></div>' +
+    '<ol class="step-list">' + body.steps.map(s => "<li>" + s + "</li>").join("") + '</ol>' +
+    '<div class="grid g2 mt"><div style="background:var(--surface2);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px"><b>Analogy</b><p style="font-size:14.5px;color:var(--ink2);margin-top:5px">' + body.analogy + '</p></div>' +
+    '<div style="background:var(--surface2);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px"><b>Example</b><p style="font-size:14.5px;color:var(--ink2);margin-top:5px">' + body.example + '</p></div></div>' +
+    '<div class="audio-player" id="audioPlayer"><div class="row-flex" style="justify-content:space-between"><b>🔊 Listen to this concept</b><span class="pill teal" id="audioSpeedLabel">Speed 1x</span></div><p style="font-size:13.5px;color:var(--ink2);margin-top:4px">Audio explanation using your browser voice — no file needed. The line being spoken highlights below.</p><div class="row-flex mt"><button class="btn btn-teal" id="audioPlayBtn">▶ Listen / Play</button><button class="btn btn-ghost" id="audioPauseBtn">⏸ Pause</button><button class="btn btn-ghost" id="audioStopBtn">⏹ Stop</button><button class="btn btn-ghost" id="audioSpeedBtn">Speed: 1x</button></div><div class="audio-transcript" id="audioTranscript"></div></div>' +
+    '<div class="mt"><h4 style="margin-bottom:8px">▶ Videos for ' + c.name + '</h4><div class="yt-grid" id="conceptYtGrid"></div></div>' +
+    '<div class="row-flex mt"><button class="btn btn-teal" id="conceptQuizBtn">Take the 3-question check</button><button class="btn btn-ghost" id="conceptClose">Close</button></div>';
+  d.classList.remove("hidden");
+  d.scrollIntoView({behavior:"smooth", block:"start"});
+  $("#eliToggle").addEventListener("change", e => { eli15 = e.target.checked; openConcept(id); });
+  $("#conceptQuizBtn").addEventListener("click", () => { showView("quiz"); startQuiz(id); });
+  $("#conceptClose").addEventListener("click", () => { stopAudio(); d.classList.add("hidden"); });
+  // Audio transcript + YT for this concept
+  try{ renderConceptAudio(c, body); renderConceptYT(c.id); }catch(e){ console.warn(e); }
+}
+$("#conceptCards").addEventListener("click", e => { const card = e.target.closest("[data-concept]"); if (card) openConcept(card.dataset.concept); });
+$("#conceptCards").addEventListener("keydown", e => { const card = e.target.closest("[data-concept]"); if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openConcept(card.dataset.concept); } });
+
+/* ================= SOCRATIC ================= */
+let socTopic = null, socStep = 0;
+$("#socChips").innerHTML = Object.keys(SOCRATIC).map(k => '<button class="qchip" data-soc="' + k + '">' + SOCRATIC[k].label + '</button>').join("");
+function socReset(topic){
+  socTopic = topic; socStep = 0;
+  $$("#socChips .qchip").forEach(c => c.classList.toggle("sel", c.dataset.soc === topic));
+  $("#socDone").classList.add("hidden");
+  $("#socAnswer").value = "";
+  $("#socChat").innerHTML = '<div class="msg ai"><div class="who">ThinkFirst · Socratic</div>No explanations from me — just questions. Let\'s see what you can figure out about <b>' + SOCRATIC[topic].label + '</b>.</div>' +
+    '<div class="msg ai"><div class="who">Question 1</div>' + SOCRATIC[topic].q[0] + '</div>';
+  $("#socAnswerZone").classList.remove("hidden");
+  $("#socProgress").textContent = "Question 1 of 3";
+}
+$("#socChips").addEventListener("click", e => { const c = e.target.closest("[data-soc]"); if (c) socReset(c.dataset.soc); });
+$("#socSend").addEventListener("click", () => {
+  const v = $("#socAnswer").value.trim();
+  if (v.length < 8){ toast("Take a real shot at the question — a sentence or two."); return; }
+  $("#socChat").insertAdjacentHTML("beforeend", '<div class="msg me"><div class="who">You</div>' + v.replace(/</g,"&lt;") + '</div>');
+  $("#socAnswer").value = "";
+  socStep++;
+  if (socStep < 3){
+    $("#socChat").insertAdjacentHTML("beforeend", '<div class="msg ai"><div class="who">Question ' + (socStep+1) + '</div>' + SOCRATIC[socTopic].q[socStep] + '</div>');
+    $("#socProgress").textContent = "Question " + (socStep+1) + " of 3";
+  } else {
+    $("#socAnswerZone").classList.add("hidden");
+    $("#socSummary").innerHTML = "<b>You did the thinking.</b> " + SOCRATIC[socTopic].done;
+    $("#socDone").classList.remove("hidden");
+    S.socraticDone++; S.attempts++; bumpDep(-2);
+    toast("Socratic round complete — counted as independent learning. Score −2.");
+  }
+  $("#socChat").lastElementChild.scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+$("#socRestart").addEventListener("click", () => { if (socTopic) socReset(socTopic); });
+
+/* ================= QUIZ ================= */
+$("#quizChips").innerHTML = Object.keys(QUIZZES).map(k => '<button class="qchip" data-quiz="' + k + '">' + QUIZZES[k].name + (S.quizScores[k] !== undefined ? " · best " + S.quizScores[k] + "/3" : "") + '</button>').join("");
+let quizState = null;
+function startQuiz(id){
+  const quiz = QUIZZES[id];
+  quizState = { id:id, answered:0, score:0 };
+  $$("#quizChips .qchip").forEach(c => c.classList.toggle("sel", c.dataset.quiz === id));
+  $("#quizBody").innerHTML = "<h3 style='margin-bottom:14px'>" + quiz.name + " — 3 questions</h3>" +
+    quiz.qs.map((q,qi) =>
+      '<div class="quiz-q"><p class="qq">Q' + (qi+1) + ". " + q.q + '</p>' +
+      q.opts.map((o,oi) => '<button class="opt" data-q="' + qi + '" data-o="' + oi + '">' + o + '<span class="why hidden"></span></button>').join("") + '</div>'
+    ).join("") +
+    '<div id="quizResult"></div>';
+}
+$("#quizBody").addEventListener("click", e => {
+  const goBtn = e.target.closest("[data-goto]"); if (goBtn){ showView(goBtn.dataset.goto); return; }
+  if (!quizState) return;
+  const id = quizState.id, quiz = QUIZZES[id];
+  const btn = e.target.closest(".opt"); if (!btn || btn.disabled) return;
+  const qi = +btn.dataset.q, oi = +btn.dataset.o, q = quiz.qs[qi];
+  const group = btn.parentElement.querySelectorAll(".opt");
+  group.forEach(b => { b.disabled = true; if (+b.dataset.o === q.a) b.classList.add("right"); });
+  if (oi === q.a){ quizState.score++; } else { btn.classList.add("wrong"); }
+  const whyEl = btn.parentElement.querySelector('[data-o="' + q.a + '"] .why');
+  whyEl.textContent = q.why; whyEl.classList.remove("hidden");
+  quizState.answered++;
+  if (quizState.answered === 3){
+    const score = quizState.score;
+    const prev = S.quizScores[id];
+    if (prev === undefined || score > prev) S.quizScores[id] = score;
+    if (score === 3) bumpDep(-2); else renderAll();
+    $("#quizResult").innerHTML = '<div class="alert ' + (score === 3 ? "alert-teal" : "alert-amber") + '" style="margin:6px 0 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>You scored ' + score + ' / 3.</b> ' +
+      (score === 3 ? "Full marks — this concept is yours now, and your Dependency Score dropped by 2." : score === 2 ? "Close! Re-read the explanation for the one you missed, then try again." : "No stress — this is exactly what the check is for. Revisit the concept card, then re-try.") + '</div></div>' +
+      '<div class="row-flex mt"><button class="btn btn-ghost" id="quizRetake">Retake quiz</button><button class="btn btn-teal" data-goto="reflect">Finish with a reflection</button></div>';
+    $("#quizRetake").addEventListener("click", () => startQuiz(id));
+    $("#quizChips").innerHTML = Object.keys(QUIZZES).map(k => '<button class="qchip' + (k === id ? " sel" : "") + '" data-quiz="' + k + '">' + QUIZZES[k].name + (S.quizScores[k] !== undefined ? " · best " + S.quizScores[k] + "/3" : "") + '</button>').join("");
+    toast("Quiz complete: " + score + "/3. Dashboard progress updated.");
+  }
+});
+$("#quizChips").addEventListener("click", e => { const c = e.target.closest("[data-quiz]"); if (c) startQuiz(c.dataset.quiz); });
+$("#quizBody").innerHTML = '<p style="color:var(--ink2)">Pick a concept above to start. Instant marking, honest feedback, no pressure — wrong answers here are free lessons.</p>';
+
+/* ================= REFLECTION ================= */
+function renderReflections(){
+  $("#reflList").innerHTML = S.reflections.length
+    ? S.reflections.map(r => '<div class="refl-item"><div class="when">' + r.when + '</div><p style="font-size:14.5px;color:var(--ink2)">' + r.text.replace(/</g,"&lt;") + '</p></div>').join("")
+    : '<p style="color:var(--ink3);font-size:14.5px">No reflections yet — your first one takes two minutes.</p>';
+  $("#reflCount").textContent = S.reflections.length + " reflections saved";
+}
+$("#reflSave").addEventListener("click", () => {
+  const v = $("#reflText").value.trim();
+  if (v.length < 15){ toast("Write a couple of honest lines — what did YOU learn, without AI?"); return; }
+  S.reflections.unshift({ when:"Today", text:v });
+  $("#reflText").value = "";
+  bumpDep(-1); renderReflections();
+  toast("Reflection saved. Small honesty, daily — that's the habit that beats dependency.");
+});
+
+
+/* ================= YOUTUBE SUGGESTIONS ================= */
+const YT_VIDEOS = [
+  {concept:"recursion", title:"Recursion in 100 Seconds + Fibonacci Explained Simply", channel:"Fireship + freeCodeCamp.org", duration:"12:48", level:"Beginner", tag:"Recursion Basics", color:"yt-thumb-purple", query:"recursion fibonacci explained freeCodeCamp"},
+  {concept:"recursion", title:"Recursion - How to Think Recursively & Trace Calls", channel:"Khan Academy", duration:"9:32", level:"Beginner", tag:"Call Stack & Base Case", color:"yt-thumb-red", query:"Khan Academy recursion base case call stack"},
+  {concept:"recursion", title:"Learn Recursion with Fibonacci - Full Tutorial", channel:"freeCodeCamp.org", duration:"18:05", level:"Intermediate", tag:"Fibonacci Trace", color:"yt-thumb-teal", query:"freeCodeCamp recursion fibonacci tutorial"},
+  {concept:"photosynthesis", title:"Photosynthesis Explained - Light Reactions & Calvin Cycle", channel:"Amoeba Sisters", duration:"8:27", level:"Beginner", tag:"Photosynthesis Basics", color:"yt-thumb-green", query:"Amoeba Sisters photosynthesis explained"},
+  {concept:"photosynthesis", title:"Photosynthesis - CrashCourse Biology", channel:"CrashCourse", duration:"13:15", level:"Beginner", tag:"Full Process", color:"yt-thumb-teal", query:"CrashCourse photosynthesis biology"},
+  {concept:"photosynthesis", title:"Photosynthesis in Detail - ATP, NADPH & Calvin Cycle", channel:"Khan Academy", duration:"11:40", level:"Intermediate", tag:"Calvin Cycle Deep Dive", color:"yt-thumb-purple", query:"Khan Academy photosynthesis Calvin cycle ATP NADPH"},
+  {concept:"supplydemand", title:"Supply and Demand - How Markets Work", channel:"Khan Academy", duration:"10:18", level:"Beginner", tag:"Equilibrium", color:"yt-thumb-amber", query:"Khan Academy supply and demand equilibrium"},
+  {concept:"supplydemand", title:"Supply & Demand in 10 Minutes - Price Shifts Explained", channel:"CrashCourse Economics", duration:"10:22", level:"Beginner", tag:"Price Rise & Shortage", color:"yt-thumb-red", query:"CrashCourse supply demand economics price"},
+  {concept:"supplydemand", title:"Demand Shifts, Supply Shifts & Market Equilibrium", channel:"Jacob Clifford / ACDC Econ", duration:"14:03", level:"Intermediate", tag:"Shifts & Graphs", color:"yt-thumb-amber", query:"supply demand shifts equilibrium graph explained"}
+];
+let ytWatched = 0;
+function ytUrl(v){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent(v.query + " " + v.title); }
+function ytCard(v){
+  return '<article class="yt-card"><div class="yt-thumb '+v.color+'"><span class="yt-play">▶</span><span class="yt-dur" style="margin-left:auto">'+v.duration+'</span></div><div class="yt-body"><div class="yt-title">'+v.title+'</div><div class="yt-meta">'+v.channel+' • '+v.level+'</div><div class="yt-tags"><span class="pill">'+v.tag+'</span><span class="pill teal">'+v.level+'</span></div><a class="btn btn-sm" style="background:#FF0000;margin-top:8px;justify-content:center;text-decoration:none" href="'+ytUrl(v)+'" target="_blank" rel="noopener" data-yt-watch="'+v.title.replace(/"/g,"")+'">▶ Watch on YouTube</a></div></article>';
+}
+function renderYT(){
+  const q = (($("#ytSearch") && $("#ytSearch").value) || "").toLowerCase().trim();
+  const f = ($("#ytFilter") && $("#ytFilter").value) || "all";
+  let list = YT_VIDEOS.filter(v => (f==="all" || v.concept===f) && (!q || (v.title+" "+v.channel+" "+v.tag+" "+v.concept).toLowerCase().includes(q)));
+  if(!list.length) list = YT_VIDEOS.filter(v => (v.title+" "+v.tag).toLowerCase().includes(q.split(" ")[0]||""));
+  const grid = $("#ytGrid"); if(!grid) return;
+  grid.innerHTML = list.length ? list.map(ytCard).join("") : '<p style="color:var(--ink2)">No exact match — try "recursion", "photosynthesis" or "supply demand". Showing all suggestions below.</p>' + YT_VIDEOS.map(ytCard).join("");
+  const wc = $("#ytWatchedCount"); if(wc) wc.textContent = ytWatched + " videos watched this week";
+}
+function renderConceptYT(conceptId){
+  const g = document.getElementById("conceptYtGrid"); if(!g) return;
+  const list = YT_VIDEOS.filter(v=>v.concept===conceptId);
+  g.innerHTML = list.map(ytCard).join("");
+}
+document.addEventListener("click", e=>{
+  const w = e.target.closest("[data-yt-watch]");
+  if(w){ ytWatched++; S.weekInd[S.weekInd.length-1]++; renderWeekBars(); renderYT(); const wc=$("#ytWatchedCount"); if(wc) wc.textContent=ytWatched+" videos watched this week"; toast("Great — watching to clear the concept counts as learning. "+ytWatched+" video(s) this week."); }
+  const chip = e.target.closest("[data-ytfilter]");
+  if(chip){ const v=chip.dataset.ytfilter; const sel=$("#ytFilter"); if(sel) sel.value=v; const s=$("#ytSearch"); if(s && v!=="all") s.value=""; renderYT(); document.getElementById("ytPanel")?.scrollIntoView({behavior:"smooth",block:"start"}); }
+});
+document.addEventListener("input", e=>{ if(e.target.id==="ytSearch") renderYT(); });
+document.addEventListener("change", e=>{ if(e.target.id==="ytFilter") renderYT(); });
+
+/* ================= AUDIO (speechSynthesis) ================= */
+let audioRate = 1, audioLines = [], audioIdx = 0, audioPaused = false, audioSpeaking = false;
+function stripHtml(s){ const d=document.createElement("div"); d.innerHTML=s; return d.textContent.trim(); }
+function stopAudio(){
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  audioSpeaking=false; audioPaused=false; audioIdx=0;
+  $$(".audio-line").forEach(el=>el.classList.remove("speaking"));
+  const st=$("#expAudioStatus"); if(st) st.classList.add("hidden");
+  const sb=$("#expStopBtn"); if(sb) sb.classList.add("hidden");
+}
+function speakLines(lines, onDone){
+  if(!("speechSynthesis" in window)){ toast("Audio not supported in this browser — try Chrome."); return; }
+  stopAudio();
+  audioLines = lines; audioIdx = 0; audioSpeaking = true;
+  function speakNext(){
+    if(audioIdx >= audioLines.length){ audioSpeaking=false; $$(".audio-line").forEach(el=>el.classList.remove("speaking")); if(onDone) onDone(); return; }
+    $$(".audio-line").forEach((el,i)=>el.classList.toggle("speaking", i===audioIdx));
+    const curLine = document.querySelectorAll(".audio-line")[audioIdx]; if(curLine) curLine.scrollIntoView({behavior:"smooth",block:"nearest"});
+    const u = new SpeechSynthesisUtterance(audioLines[audioIdx]);
+    u.rate = audioRate; u.pitch = 1; u.lang = "en-US";
+    u.onend = ()=>{ if(!audioSpeaking) return; audioIdx++; speakNext(); };
+    u.onerror = ()=>{ audioIdx++; if(audioSpeaking) speakNext(); };
+    speechSynthesis.speak(u);
+  }
+  speakNext();
+}
+function renderConceptAudio(c, body){
+  const transcript = document.getElementById("audioTranscript"); if(!transcript) return;
+  const lines = [];
+  lines.push(c.name + ". " + c.tagline);
+  body.steps.forEach(s=>lines.push(stripHtml(s)));
+  lines.push("Analogy. " + stripHtml(body.analogy));
+  lines.push("Example. " + stripHtml(body.example));
+  transcript.innerHTML = lines.map((l,i)=>'<div class="audio-line" data-line="'+i+'">'+l.replace(/</g,"&lt;")+'</div>').join("");
+  const playBtn = document.getElementById("audioPlayBtn");
+  const pauseBtn = document.getElementById("audioPauseBtn");
+  const stopBtn = document.getElementById("audioStopBtn");
+  const speedBtn = document.getElementById("audioSpeedBtn");
+  if(playBtn) playBtn.onclick = ()=>{ audioPaused=false; speakLines(lines); toast("Playing audio explanation for "+c.name); };
+  if(pauseBtn) pauseBtn.onclick = ()=>{
+    if(!window.speechSynthesis) return;
+    if(speechSynthesis.speaking && !speechSynthesis.paused){ speechSynthesis.pause(); audioPaused=true; pauseBtn.textContent="▶ Resume"; }
+    else if(speechSynthesis.paused){ speechSynthesis.resume(); audioPaused=false; pauseBtn.textContent="⏸ Pause"; }
+  };
+  if(stopBtn) stopBtn.onclick = ()=>{ stopAudio(); if(pauseBtn) pauseBtn.textContent="⏸ Pause"; toast("Audio stopped."); };
+  if(speedBtn) speedBtn.onclick = ()=>{
+    audioRate = audioRate===1 ? 1.25 : audioRate===1.25 ? 1.5 : 1;
+    speedBtn.textContent = "Speed: "+audioRate+"x";
+    const lbl=document.getElementById("audioSpeedLabel"); if(lbl) lbl.textContent="Speed "+audioRate+"x";
+    toast("Audio speed "+audioRate+"x — press Listen again to hear it at this speed.");
+  };
+}
+
+/* ================= GOOGLE CLASSROOM SYNC ================= */
+const GC_COURSES = [
+  {name:"Data Structures", teacher:"Computer Engineering", color:"#1E8E3E", count:2},
+  {name:"Biology", teacher:"Life Sciences", color:"#0E9594", count:2},
+  {name:"Economics / Microeconomics", teacher:"Economics", color:"#B45309", count:2}
+];
+const GC_ASSIGNMENTS = [
+  {title:"Recursion Practice — Fibonacci & Tracing", course:"Data Structures", due:"Due Sat, 25 Oct • 11:59 PM", status:"Pending", cls:"status-pending", qid:"fib", promptId:"fib-trace"},
+  {title:"Photosynthesis Lab Report — Light Reactions", course:"Biology", due:"Due Sun, 26 Oct • 11:59 PM", status:"Pending", cls:"status-pending", qid:"photo", promptId:"photo-explain"},
+  {title:"Supply & Demand Case Study — Price Rise", course:"Economics / Microeconomics", due:"Due Mon, 27 Oct • 10:00 AM", status:"In Progress", cls:"status-progress", qid:"supply", promptId:"price-why"},
+  {title:"Trace sum(n) — Recursion Worksheet", course:"Data Structures", due:"Due Tue, 28 Oct • 11:59 PM", status:"New", cls:"status-new", qid:"recursion-sum", promptId:"fib-trace"},
+  {title:"Plant Growth Observation Notes", course:"Biology", due:"Due Wed, 29 Oct", status:"Pending", cls:"status-pending", qid:"photo", promptId:"photo-explain"},
+  {title:"Market Equilibrium Graph Practice", course:"Economics / Microeconomics", due:"Due Thu, 30 Oct", status:"Pending", cls:"status-pending", qid:"supply", promptId:"price-why"}
+];
+let gcSynced = false;
+function renderGC(){
+  const coursesEl = $("#gcCourses"); if(coursesEl) coursesEl.innerHTML = GC_COURSES.map(c=>'<div class="gc-course"><div style="width:10px;height:10px;border-radius:50%;background:'+c.color+';margin-bottom:6px"></div><b>'+c.name+'</b><p class="sub">'+c.teacher+' • '+c.count+' assignments</p></div>').join("");
+  const listEl = $("#gcAssignments"); if(listEl) listEl.innerHTML = GC_ASSIGNMENTS.map((a,i)=>'<div class="gc-assign"><div style="flex:1;min-width:220px"><b>'+a.title+'</b><p class="sub">'+a.course+' • '+a.due+'</p></div><span class="status-pill '+a.cls+'">'+a.status+'</span><div class="row-flex"><button class="btn btn-sm btn-teal" data-gc-start="'+i+'">Start with ThinkFirst</button><button class="btn btn-sm btn-ghost" data-gc-attempt="'+i+'">Attempt First</button></div></div>').join("");
+  const upEl = $("#gcUpcomingList"); if(upEl) upEl.innerHTML = GC_ASSIGNMENTS.slice(0,4).map((a,i)=>'<div class="gc-assign"><div><b>'+a.title+'</b><p class="sub">'+a.course+' • '+a.due+'</p></div><button class="btn btn-sm" data-gc-start="'+i+'">Attempt First →</button></div>').join("");
+}
+function doGCSync(){
+  const disc=$("#gcDisconnected"), syncing=$("#gcSyncing"), synced=$("#gcSynced"), pill=$("#gcStatusPill");
+  if(disc) disc.classList.add("hidden"); if(synced) synced.classList.add("hidden"); if(syncing) syncing.classList.remove("hidden");
+  if(pill){ pill.textContent="Syncing…"; }
+  const bar=$("#gcProgressBar"), txt=$("#gcSyncText");
+  const steps=[[18,"Connecting to Google Classroom…"],[42,"Fetching your courses (3 found)…"],[68,"Importing assignments (6 found)…"],[88,"Matching topics to ThinkFirst concepts…"],[100,"Sync complete ✓"]];
+  let idx=0;
+  function next(){
+    if(idx>=steps.length){
+      if(syncing) syncing.classList.add("hidden"); if(synced) synced.classList.remove("hidden");
+      const now=new Date(); const timeStr=now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" • "+now.toLocaleDateString();
+      const info=$("#gcSyncInfo"); if(info) info.textContent="Last synced: Today, "+timeStr;
+      const cnt=$("#gcCount"); if(cnt) cnt.textContent=GC_ASSIGNMENTS.length+" assignments synced";
+      const last=$("#gcLastSync"); if(last) last.textContent="Last synced: "+timeStr+" • "+GC_ASSIGNMENTS.length+" assignments";
+      if(pill){ pill.textContent="✓ Connected & Synced"; pill.className="pill green"; }
+      const upCard=$("#gcUpcomingCard"); if(upCard) upCard.classList.remove("hidden");
+      gcSynced=true; renderGC(); toast("Google Classroom synced — 6 assignments imported to your Dashboard.");
+      return;
+    }
+    const [pct,msg]=steps[idx]; if(bar) bar.style.width=pct+"%"; if(txt) txt.textContent=msg; idx++; setTimeout(next, 550);
+  }
+  next();
+}
+document.addEventListener("click", e=>{
+  if(e.target.id==="gcConnectBtn" || e.target.id==="gcSyncBtn" || e.target.id==="gcResyncBtn"){ doGCSync(); }
+  const startBtn=e.target.closest("[data-gc-start]");
+  if(startBtn){ const a=GC_ASSIGNMENTS[+startBtn.dataset.gcStart]; const q=QUESTIONS.find(x=>x.id===a.qid); if(q){ loadQuestion(q); showView("hint"); toast("Classroom assignment loaded in Hint-First: "+a.title); } return; }
+  const attBtn=e.target.closest("[data-gc-attempt]");
+  if(attBtn){ const a=GC_ASSIGNMENTS[+attBtn.dataset.gcAttempt]; const sel=$("#attPrompt"); if(sel) sel.value=a.promptId; showView("attempt"); toast("Attempt First: "+a.title+" — timer ready, no AI yet."); return; }
+  if(e.target.id==="expListenBtn"){
+    const steps = curQ.steps.map(s=>stripHtml(s));
+    const lines = [curQ.text, ...steps, "Key idea. "+curQ.key];
+    const st=$("#expAudioStatus"); if(st) st.classList.remove("hidden");
+    const sb=$("#expStopBtn"); if(sb) sb.classList.remove("hidden");
+    // create hidden transcript lines for highlight sync in exp card
+    speakLines(lines, ()=>{ if(st) st.textContent="✓ Audio finished — now try the quiz from memory."; });
+    toast("Playing audio explanation…");
+  }
+  if(e.target.id==="expStopBtn"){ stopAudio(); toast("Audio stopped."); }
+});
+
+
+/* ================= INIT ================= */
+loadQuestion(QUESTIONS[0]);
+renderWeekBars();
+renderReflections();
+drawTimer();
+renderAll();
+socReset("recursion");
+try{ renderYT(); renderGC(); }catch(e){console.warn(e)}
+</script>
+</body>
+</html>
